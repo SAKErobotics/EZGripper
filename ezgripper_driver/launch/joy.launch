@@ -9,5 +9,7 @@
     <param name="~baud" value="57600"/>
     <rosparam param="servo_ids">[9]</rosparam>
   </node>
+  
+  <node pkg="ezgripper_driver" type="client.py" name="ezgripper_client" output="screen"/>
 
 </launch>

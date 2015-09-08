@@ -31,18 +31,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ##
 
-
 #  
 #  If you want to modify this program, you can find the "Main program" and 
 #  "Main loop" by searching for these terms.  They exist near the end of this file.
 #
-#  If you want to modify the actions of the Joystick, search for "joy_callback"
-#
-#
 
 import rospy
-from sensor_msgs.msg import Joy
+from std_srvs.srv import Empty, EmptyResponse
 from ezgripper_libs.lib_robotis import USB2Dynamixel_Device, Robotis_Servo, CommunicationError
+import actionlib
+from control_msgs.msg import GripperCommandAction, GripperCommandResult
+from math import acos, radians
 
 
 def calibrate(servos):
@@ -53,7 +52,7 @@ def calibrate(servos):
         servo.write_word(34, 500)                  # 2) "Torque Limit" to 500 (or so)
         servo.write_address(24, [0])               # 3) "Torque Enable" to OFF
         servo.write_address(70, [1])               # 1) Set "Goal Torque Mode" to ON
-        servo.write_word(71, 1024 + torque_hold)   # 2) Set "Goal Torque" Direction to CW and Value 50
+        servo.write_word(71, 1024 + 100)           # 2) Set "Goal Torque" Direction to CW and Value 100
     
     rospy.sleep(2.0)                               # give it time to stop
     
@@ -80,80 +79,112 @@ def gripper_open():
         servo.write_word(30, grip_max)
     rospy.sleep(1.0)
 
-def gripper_close():
+def wait_for_stop():
+    wait_start = rospy.get_rostime()
+    last_position = servos[0].read_encoder()
+    rospy.sleep(0.1)
+    while not rospy.is_shutdown():
+        current_position = servos[0].read_encoder()
+        if current_position == last_position:
+            break
+        last_position = current_position
+        
+        if (rospy.get_rostime() - wait_start).to_sec() > 5.0:
+            break
+        
+        rospy.sleep(0.05)
+
+def gripper_close(closing_torque):
     for servo in servos:
         set_torque_mode(servo, True)
-        servo.write_word(71, 1024 + torque_max)  # Set "Goal Torque" Direction to CW and Value
+        servo.write_word(71, 1024 + closing_torque)  # Set "Goal Torque" Direction to CW and Value
         
-    rospy.sleep(0.5)
+    wait_for_stop()
     
     for servo in servos:
         servo.write_word(71, 1024 + torque_hold)  # Set "Goal Torque" Direction to CW and Value
 
-def gripper_open_step():
-    global grip_value
-    
-    for servo in servos:
-        set_torque_mode(servo, False)
-    grip_value = grip_value + grip_step
-    if grip_value > grip_max:
-        grip_value = grip_max
-    print grip_value
-    for servo in servos:
-        servo.write_word(30, grip_value)
-
-def grip_close_step():
-    global grip_value
-    
+def gripper_goto_position(position):
     for servo in servos:
         set_torque_mode(servo, False)            
-    grip_value = grip_value - grip_step
-    if grip_value < grip_min:
-        grip_value = grip_min
-    print grip_value
     for servo in servos:
-        servo.write_word(30, grip_value)
+        servo.write_word(30, position)
+    wait_for_stop()
+    
 
-def joy_callback(joy):
-    global grip_value, last_command_end_time
+def calibrate_srv(msg):
+    rospy.loginfo("Calibrate service: request received")
+    calibrate(servos)
+    gripper_open()    
+    rospy.loginfo("Calibrate service: request completed")
+    return EmptyResponse()
     
-    # gripper position
-    if joy.buttons[13] == 1: # xpad driver mapping
-    #if joy.axes[7] == 1.0: # xboxdrv mapping
-        gripper_open_step()
-            
-    if joy.buttons[14] == 1:
-    #if joy.axes[7] == -1.0:
-        grip_close_step()
+def gripper_action_execute(goal):
+    rospy.loginfo("Execute goal: position=%.3f, max_effort=%.3f"%
+                  (goal.command.position, goal.command.max_effort))
+    
+    if goal.command.max_effort == 0.0:
+        rospy.loginfo("Release torque: start")
+        for servo in servos:
+            set_torque_mode(servo, False)
+        result = GripperCommandResult()
+        result.position = goal.command.position
+        result.effort = 0.0
+        result.stalled = False
+        result.reached_goal = True
+        action_server.set_succeeded(result)
+        rospy.loginfo("Release torque: done")
+        return
+    
+    if goal.command.position > max_gap - 0.005:
+        rospy.loginfo("Open: start")
+        gripper_open()
+        result = GripperCommandResult()
+        result.position = goal.command.position
+        result.effort = 12.0
+        result.stalled = False
+        result.reached_goal = True
+        action_server.set_succeeded(result)
+        rospy.loginfo("Open: done")
+        return
+    
+    if goal.command.position == 0.0:
+        rospy.loginfo("Close: start")
+        closing_torque = goal.command.max_effort*16.0 - 96.0 # TODO: need a more accurate calculation
+        if closing_torque < torque_hold: closing_torque = torque_hold
+        if closing_torque > torque_max: closing_torque = torque_max
+        rospy.loginfo("Using closing torque %.2f"%closing_torque)
+        gripper_close(closing_torque)
+        result = GripperCommandResult()
+        result.position = goal.command.position
+        result.effort = 12.0
+        result.stalled = False
+        result.reached_goal = True
+        action_server.set_succeeded(result)
+        rospy.loginfo("Close: done")
+        return
+    
+    rospy.loginfo("Go to position: start")
+    # TODO: use the effort value as well
+    servo_position = servo_position_from_gap(goal.command.position)
+    rospy.loginfo("Target position: %.3f (%d)"%(goal.command.position, servo_position))
+    gripper_goto_position(servo_position)
+    result = GripperCommandResult()
+    result.position = goal.command.position
+    result.effort = goal.command.max_effort
+    result.stalled = False
+    result.reached_goal = True
+    action_server.set_succeeded(result)    
+    rospy.loginfo("Go to position: done")
         
-    if (rospy.get_rostime() - last_command_end_time).to_sec() > 0.2:
-        # This check should flush all messages accumulated during command execution
-        # and avoid executing it again.
-        
-        if joy.buttons[3] == 1: # Y
-            for servo in servos:
-                set_torque_mode(servo, True)
-                servo.write_word(71, 1024 + torque_hold)  # Set "Goal Torque" Direction to CW and Value
-            rospy.sleep(1.0)
-            last_command_end_time = rospy.get_rostime()
-                
-        if joy.buttons[2] == 1: # X
-            for servo in servos:
-                set_torque_mode(servo, False)
-            last_command_end_time = rospy.get_rostime()
     
-        if joy.buttons[1] == 1: # B
-            gripper_open()
-            last_command_end_time = rospy.get_rostime()
-    
-        if joy.buttons[0] == 1: # A
-            gripper_close()
-            last_command_end_time = rospy.get_rostime()
-            
-        if joy.buttons[6] == 1: # BACK
-            calibrate(servos)
-            gripper_open()
-            last_command_end_time = rospy.get_rostime()
+def servo_position_from_gap(gap):
+    angle = acos((gap - distance_between_fingers)/2.0/finger_link_length)
+    angle = grip_angle_max - angle # now it's: 0 - closed, 102 degrees - open
+    position = int(angle / grip_angle_max * grip_max)
+    if position < 0: position = 0
+    if position > grip_max: position = grip_max
+    return position
     
 
 # Main Program
@@ -165,10 +196,13 @@ port_name = rospy.get_param('~port', '/dev/ttyUSB0')
 baud = int(rospy.get_param('~baud', '57600'))
 servo_ids = rospy.get_param('~servo_ids')
 
+distance_between_fingers = 0.05 # meters
+finger_link_length = 0.065
+max_gap = distance_between_fingers + finger_link_length * 2
+
 grip_max = 2800 #maximum open position for grippers
-grip_value = grip_max
+grip_angle_max = radians(102) # 102 degrees, in radians
 grip_min = 0
-grip_step = 45 # gripper step Cross Up and Cross Down
 
 torque_max = 350 # maximum torque - MX-64=500, MX-106=350
 torque_hold = 100 # holding torque - MX-64=100, MX-106=80
@@ -177,11 +211,12 @@ dyn = USB2Dynamixel_Device(port_name, baud)
 servos = [Robotis_Servo( dyn, servo_id ) for servo_id in servo_ids]
 
 calibrate(servos)
-for servo in servos: servo.write_word(30, grip_max)    # Open the gripper to maximum after calibration
-rospy.sleep(2.0)
+gripper_open()
 
 last_command_end_time = rospy.get_rostime()
-rospy.Subscriber("/joy", Joy, joy_callback)
+rospy.Service('calibrate', Empty, calibrate_srv)
+action_server = actionlib.SimpleActionServer('gripper', GripperCommandAction, gripper_action_execute, False)
+action_server.start()
 
 # Main Loop
 
