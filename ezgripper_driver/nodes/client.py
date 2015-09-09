@@ -160,10 +160,10 @@ rospy.wait_for_service('calibrate')
 calibrate = rospy.ServiceProxy('calibrate', Empty)
 rospy.loginfo("Connected to service calibrate")
 
-grip_max = 0.17 #maximum open position for grippers
+grip_max = 0.18 #maximum open position for grippers
 grip_value = grip_max
 grip_min = 0.0
-grip_step = grip_max/5 # gripper step Cross Up and Cross Down
+grip_step = grip_max/15 # gripper step Cross Up and Cross Down
 
 last_command_end_time = rospy.get_rostime()
 rospy.Subscriber("/joy", Joy, joy_callback)
