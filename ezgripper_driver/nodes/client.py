@@ -39,7 +39,7 @@ import ezgripper_interface
 class EZGripperJoy(object):
     def __init__(self):
         self.ezgripper = ezgripper_interface.EZGripper()
-        self.last_command_end_time = rospy.get_time
+        self.last_command_end_time = rospy.get_rostime()
 
     def joy_callback(self, joy):
         if not joy.buttons:
