@@ -32,142 +32,56 @@
 ##
 
 import rospy
-import actionlib
-from control_msgs.msg import GripperCommandAction, GripperCommandGoal
 from sensor_msgs.msg import Joy
-from std_srvs.srv import Empty
+import ezgripper_interface
 
-# http://docs.ros.org/indigo/api/control_msgs/html/msg/GripperCommand.html
-# float64 position
-# float64 max_effort
-#
-# http://docs.ros.org/indigo/api/control_msgs/html/action/GripperCommand.html
-# GripperCommand command
-# ---
-# float64 position  # The current gripper gap size (in meters)
-# float64 effort    # The current effort exerted (in Newtons)
-# bool stalled      # True iff the gripper is exerting max effort and not moving
-# bool reached_goal # True iff the gripper position has reached the commanded setpoint
-# ---
-# float64 position  # The current gripper gap size (in meters)
-# float64 effort    # The current effort exerted (in Newtons)
-# bool stalled      # True iff the gripper is exerting max effort and not moving
-# bool reached_goal # True iff the gripper position has reached the commanded setpoint
 
-def gripper_open_step():
-    global grip_value
-    
-    grip_value = grip_value + grip_step
-    if grip_value > grip_max:
-        grip_value = grip_max
+class EZGripperJoy(object):
+    def __init__(self):
+        self.ezgripper = ezgripper_interface.EZGripper()
+        self.last_command_end_time = rospy.get_time
+
+    def joy_callback(self, joy):
+        if not joy.buttons:
+            return # Don't break on an empty list
+
+        if (rospy.get_rostime() - self.last_command_end_time).to_sec() > 0.2:
+            # This check should flush all messages accumulated during command execution
+            # and avoid executing it again.
         
-    rospy.loginfo("client: goto position %.3f"%grip_value)
-    goal = GripperCommandGoal()
-    goal.command.position = grip_value
-    goal.command.max_effort = 28.0
-    client.send_goal_and_wait(goal)
-    rospy.loginfo("client: goto position done")
-
-def gripper_close_step():
-    global grip_value
-    
-    grip_value = grip_value - grip_step
-    if grip_value < grip_min:
-        grip_value = grip_min
-        
-    rospy.loginfo("client: goto position %.3f"%grip_value)
-    goal = GripperCommandGoal()
-    goal.command.position = grip_value
-    goal.command.max_effort = 28.0
-    client.send_goal_and_wait(goal)
-    rospy.loginfo("client: goto position done")
-
-def joy_callback(joy):
-    global last_command_end_time, grip_value
-
-    if not joy.buttons:
-        return # Don't break on an empty list
-
-    if (rospy.get_rostime() - last_command_end_time).to_sec() > 0.2:
-        # This check should flush all messages accumulated during command execution
-        # and avoid executing it again.
-        
-        if joy.buttons[0] == 1: # A - hard close
-            rospy.loginfo("client: hard close")
-            goal = GripperCommandGoal()
-            goal.command.position = 0.0
-            goal.command.max_effort = 28.0
-            client.send_goal_and_wait(goal)
-            rospy.loginfo("client: hard close done")
-            last_command_end_time = rospy.get_rostime()
-            grip_value = grip_min
+            if joy.buttons[0] == 1: # A - hard close
+                self.ezgripper.hard_close()
+                self.last_command_end_time = rospy.get_rostime()
             
-        if joy.buttons[3] == 1: # Y - soft close
-            rospy.loginfo("client: soft close")
-            goal = GripperCommandGoal()
-            goal.command.position = 0.0
-            goal.command.max_effort = 12.0
-            client.send_goal_and_wait(goal)
-            rospy.loginfo("client: soft close done")
-            last_command_end_time = rospy.get_rostime()
-            grip_value = grip_min
+            if joy.buttons[3] == 1: # Y - soft close
+                self.ezgripper.soft_close()
+                self.last_command_end_time = rospy.get_rostime()
                 
-        if joy.buttons[1] == 1: # B - open
-            rospy.loginfo("client: open")
-            goal = GripperCommandGoal()
-            goal.command.position = 0.20   # more than max
-            goal.command.max_effort = 12.0 # any non 0.0
-            client.send_goal_and_wait(goal)
-            rospy.loginfo("client: open done")
-            last_command_end_time = rospy.get_rostime()
-            grip_value = grip_max
+            if joy.buttons[1] == 1: # B - open
+                self.ezgripper.open()
+                self.last_command_end_time = rospy.get_rostime()
     
-        if joy.buttons[2] == 1: # X - release
-            rospy.loginfo("client: release")
-            goal = GripperCommandGoal()
-            goal.command.position = 0.0 # any
-            goal.command.max_effort = 0.0
-            client.send_goal_and_wait(goal)
-            rospy.loginfo("client: release done")
-            last_command_end_time = rospy.get_rostime()
+            if joy.buttons[2] == 1: # X - release
+                self.ezgripper.release()
+                self.last_command_end_time = rospy.get_rostime()
     
-        if joy.buttons[6] == 1: # BACK - Calibrate
-            rospy.loginfo("client: calibrate")
-            calibrate()
-            rospy.loginfo("client: calibrate done")
-            last_command_end_time = rospy.get_rostime()
-            grip_value = grip_max
+            if joy.buttons[6] == 1: # BACK - Calibrate
+                self.ezgripper.calibrate()
+                self.last_command_end_time = rospy.get_rostime()
 
-        if joy.buttons[13] == 1: # xpad driver mapping
-        #if joy.axes[7] == 1.0: # xboxdrv mapping
-            gripper_open_step()
-            last_command_end_time = rospy.get_rostime()
+            if joy.buttons[13] == 1: # xpad driver mapping
+            #if joy.axes[7] == 1.0: # xboxdrv mapping
+                self.ezgripper.open_step()
+                self.last_command_end_time = rospy.get_rostime()
                  
-        if joy.buttons[14] == 1:
-        #if joy.axes[7] == -1.0:
-            gripper_close_step()
-            last_command_end_time = rospy.get_rostime()
+            if joy.buttons[14] == 1:
+            #if joy.axes[7] == -1.0:
+                self.ezgripper.close_step()
+                self.last_command_end_time = rospy.get_rostime()
 
-rospy.init_node("ezgripper_client")
-
-rospy.loginfo("Waiting for gripper action server...")
-client = actionlib.SimpleActionClient("gripper", GripperCommandAction)
-client.wait_for_server(rospy.Duration(60))
-rospy.loginfo("Connected to server")
-
-rospy.loginfo("Waiting for service calibrate...")
-rospy.wait_for_service('calibrate')
-calibrate = rospy.ServiceProxy('calibrate', Empty)
-rospy.loginfo("Connected to service calibrate")
-
-grip_max = 0.18 #maximum open position for grippers
-grip_value = grip_max
-grip_min = 0.0
-grip_step = grip_max/15 # gripper step Cross Up and Cross Down
-
-last_command_end_time = rospy.get_rostime()
-rospy.Subscriber("/joy", Joy, joy_callback)
-
-rospy.spin()
-
-rospy.loginfo("Exiting")
+if __name__ == "__main__":
+    rospy.init_node("ezgripper_joy_client")
+    ezgripper_joy = EZGripperJoy()
+    rospy.Subscriber("/joy", Joy, ezgripper_joy.joy_callback)
+    rospy.spin()
+    rospy.loginfo("Exiting")
