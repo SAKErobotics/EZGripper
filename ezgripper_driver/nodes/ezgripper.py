@@ -81,16 +81,20 @@ def gripper_open():
 
 def wait_for_stop():
     wait_start = rospy.get_rostime()
-    last_position = servos[0].read_encoder()
+    last_position = 1000000 # read_encoder() cannot return more than 65536
     rospy.sleep(0.1)
     while not rospy.is_shutdown():
-        current_position = servos[0].read_encoder()
-        if current_position == last_position:
-            break
-        last_position = current_position
-        
-        if (rospy.get_rostime() - wait_start).to_sec() > 5.0:
-            break
+        try:
+            current_position = servos[0].read_encoder()
+            if current_position == last_position:
+                break
+            last_position = current_position
+            
+            if (rospy.get_rostime() - wait_start).to_sec() > 5.0:
+                break
+        except CommunicationError as e:
+            rospy.logwarn("wait_for_stop loop CommunicationError: %s"%e)
+            servo.flushAll()
         
         rospy.sleep(0.05)
 
@@ -226,7 +230,7 @@ while not rospy.is_shutdown():
         try:
             servo.check_overload_and_recover()
         except CommunicationError, e:
-            rospy.logerr("loop CommunicationError: %s"%e)
+            rospy.logwarn("loop CommunicationError: %s"%e)
             servo.flushAll()
         except Exception, e:
             rospy.logerr("Exception: %s"%e)

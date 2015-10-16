@@ -280,6 +280,7 @@ class Robotis_Servo():
         self.dyn.acq_mutex()
         try:
             self.send_serial( msg )
+            self.dyn.servo_dev.flushInput()
             data, err = self.receive_reply()
         except:
             self.dyn.rel_mutex()
@@ -311,6 +312,7 @@ class Robotis_Servo():
         self.dyn.acq_mutex()
         try:
             self.send_serial( msg )
+            self.dyn.servo_dev.flushInput()
             data, err = self.receive_reply()
         except:
             self.dyn.rel_mutex()
@@ -323,9 +325,18 @@ class Robotis_Servo():
         raise ErrorResponse(err)
 
     def receive_reply(self):
-        start = self.dyn.read_serial( 2 )
-        if start != '\xff\xff':
-            raise CommunicationError('lib_robotis: Failed to receive start bytes\n')
+        start_bytes_received = 0
+        while (start_bytes_received < 2):
+            one = self.dyn.read_serial( 1 )
+            if len(one) == 0:
+                # timeout
+                raise CommunicationError('lib_robotis: Failed to receive start bytes\n')
+            #print ord(one[0])
+            if one == '\xff':
+                start_bytes_received += 1
+            else:
+                start_bytes_received = 0
+
         servo_id = self.dyn.read_serial( 1 )
         if ord(servo_id) != self.servo_id:
             raise CommunicationError('lib_robotis: Incorrect servo ID received: %d\n' % ord(servo_id))
