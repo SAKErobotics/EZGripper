@@ -16,7 +16,7 @@
 3) Setup parameters in joy.launch file
   - ~port - serial device to use
   - ~baud - baud rate
-  - servo_ids - the servo(s) id controlled as a group of grippers, for example [9,10,11]
+  - grippers - definition of grippers on this serial bus: the gripper name to use for the action interface and the servo id of the gripper (several ids if several grippers are to be used as one group), for example {left:[9], right:[10,11]}
 
 4) Launch the node
 
