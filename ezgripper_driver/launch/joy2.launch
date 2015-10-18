@@ -7,11 +7,11 @@
   <node pkg="ezgripper_driver" type="ezgripper.py" name="ezgripper" output="screen">
     <param name="~port" value="/dev/ttyUSB0"/>
     <param name="~baud" value="57600"/>
-    <rosparam param="grippers">{main:[9]}</rosparam>
+    <rosparam param="grippers">{left:[9], right:[11]}</rosparam>
   </node>
   
   <node pkg="ezgripper_driver" type="client.py" name="ezgripper_client" output="screen">
-    <rosparam param="grippers">['ezgripper/main']</rosparam>
+    <rosparam param="grippers">['ezgripper/left', 'ezgripper/right']</rosparam>
   </node>
 
 </launch>

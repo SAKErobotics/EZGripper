@@ -55,7 +55,8 @@ from std_srvs.srv import Empty
 
 
 class EZGripper(object):
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         self._grip_max = 0.18 #maximum open position for grippers
         self._grip_value = self._grip_max
         self._grip_min = 0.0
@@ -64,21 +65,22 @@ class EZGripper(object):
         self._connect_to_calibrate_srv()
 
     def _connect_to_gripper_action(self):
-        rospy.loginfo("Waiting for gripper action server...")
-        self._client = actionlib.SimpleActionClient("gripper", GripperCommandAction)
+        rospy.loginfo("Waiting for action server %s..."%self.name)
+        self._client = actionlib.SimpleActionClient(self.name, GripperCommandAction)
         self._client.wait_for_server(rospy.Duration(60))
         rospy.loginfo("Connected to action server")
 
     def _connect_to_calibrate_srv(self):
-        rospy.loginfo("Waiting for service calibrate...")
-        rospy.wait_for_service('calibrate')
-        self._calibrate_srv = rospy.ServiceProxy('calibrate', Empty)
-        rospy.loginfo("Connected to service calibrate")
+        service_name = self.name + '/calibrate'
+        rospy.loginfo("Waiting for service %s..."%service_name)
+        rospy.wait_for_service(service_name)
+        self._calibrate_srv = rospy.ServiceProxy(service_name, Empty)
+        rospy.loginfo("Connected to service " + service_name)
 
     def calibrate(self):
         rospy.loginfo("ezgripper_interface: calibrate")
         try:
-            resp = self._calibrate_srv()
+            _ = self._calibrate_srv()
         except rospy.ServiceException as exc:
             rospy.logwarn("Service did not process request: " + str(exc))
         else:
@@ -146,7 +148,7 @@ class EZGripper(object):
 
 if __name__ == "__main__":
     rospy.init_node("ezgripper_client")
-    ez = EZGripper()
+    ez = EZGripper('ezgripper/main')
     ez.open()
     ez.calibrate()
     ez.open()

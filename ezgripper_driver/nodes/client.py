@@ -37,51 +37,61 @@ import ezgripper_interface
 
 
 class EZGripperJoy(object):
-    def __init__(self):
-        self.ezgripper = ezgripper_interface.EZGripper()
+    def __init__(self, gripper_names):
+        self.ezgripper_left = ezgripper_interface.EZGripper(gripper_names[0])
+        if len(gripper_names) > 1:
+            self.ezgripper_right = ezgripper_interface.EZGripper(gripper_names[1])
+        else:
+            self.ezgripper_right = None
         self.last_command_end_time = rospy.get_rostime()
 
     def joy_callback(self, joy):
         if not joy.buttons:
             return # Don't break on an empty list
 
+        if joy.buttons[5] == 1 and self.ezgripper_right is not None: # RB
+            gripper = self.ezgripper_right
+        else:
+            gripper = self.ezgripper_left
+
         if (rospy.get_rostime() - self.last_command_end_time).to_sec() > 0.2:
             # This check should flush all messages accumulated during command execution
             # and avoid executing it again.
         
             if joy.buttons[0] == 1: # A - hard close
-                self.ezgripper.hard_close()
+                gripper.hard_close()
                 self.last_command_end_time = rospy.get_rostime()
             
             if joy.buttons[3] == 1: # Y - soft close
-                self.ezgripper.soft_close()
+                gripper.soft_close()
                 self.last_command_end_time = rospy.get_rostime()
                 
             if joy.buttons[1] == 1: # B - open
-                self.ezgripper.open()
+                gripper.open()
                 self.last_command_end_time = rospy.get_rostime()
     
             if joy.buttons[2] == 1: # X - release
-                self.ezgripper.release()
+                gripper.release()
                 self.last_command_end_time = rospy.get_rostime()
     
             if joy.buttons[6] == 1: # BACK - Calibrate
-                self.ezgripper.calibrate()
+                gripper.calibrate()
                 self.last_command_end_time = rospy.get_rostime()
 
             if joy.buttons[13] == 1: # xpad driver mapping
             #if joy.axes[7] == 1.0: # xboxdrv mapping
-                self.ezgripper.open_step()
+                gripper.open_step()
                 self.last_command_end_time = rospy.get_rostime()
                  
             if joy.buttons[14] == 1:
             #if joy.axes[7] == -1.0:
-                self.ezgripper.close_step()
+                gripper.close_step()
                 self.last_command_end_time = rospy.get_rostime()
 
 if __name__ == "__main__":
     rospy.init_node("ezgripper_joy_client")
-    ezgripper_joy = EZGripperJoy()
+    gripper_names = rospy.get_param('~grippers')
+    ezgripper_joy = EZGripperJoy(gripper_names)
     rospy.Subscriber("/joy", Joy, ezgripper_joy.joy_callback)
     rospy.spin()
     rospy.loginfo("Exiting")
