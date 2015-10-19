@@ -38,7 +38,7 @@
 
 import rospy
 from std_srvs.srv import Empty, EmptyResponse
-from ezgripper_libs.lib_robotis import USB2Dynamixel_Device, Robotis_Servo, CommunicationError
+from ezgripper_libs.lib_robotis import USB2Dynamixel_Device, Robotis_Servo
 import actionlib
 from control_msgs.msg import GripperCommandAction, GripperCommandResult
 from math import acos, radians
@@ -58,17 +58,13 @@ def wait_for_stop(servo):
     last_position = 1000000 # read_encoder() cannot return more than 65536
     rospy.sleep(0.1)
     while not rospy.is_shutdown():
-        try:
-            current_position = servo.read_encoder()
-            if current_position == last_position:
-                break
-            last_position = current_position
-            
-            if (rospy.get_rostime() - wait_start).to_sec() > 5.0:
-                break
-        except CommunicationError as e:
-            rospy.logwarn("wait_for_stop loop CommunicationError: %s"%e)
-            servo.flushAll()
+        current_position = servo.read_encoder()
+        if current_position == last_position:
+            break
+        last_position = current_position
+        
+        if (rospy.get_rostime() - wait_start).to_sec() > 5.0:
+            break
         
         rospy.sleep(0.05)
 
@@ -243,9 +239,6 @@ while not rospy.is_shutdown():
     for servo in all_servos:
         try:
             servo.check_overload_and_recover()
-        except CommunicationError, e:
-            rospy.logwarn("loop CommunicationError: %s"%e)
-            servo.flushAll()
         except Exception, e:
             rospy.logerr("Exception: %s"%e)
             servo.flushAll()

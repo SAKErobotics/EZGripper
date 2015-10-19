@@ -40,6 +40,9 @@ import sys, optparse
 import math
 import string
 
+def warning(msg):
+    print >> sys.stderr, msg
+    
 class ErrorResponse(Exception):
     def __init__(self, value):
         self.value = value
@@ -270,27 +273,40 @@ class Robotis_Servo():
             return [n1,n2 ...] (list of return parameters)
         '''
         msg = [ 0x03, address ] + data
-        return self.send_instructionX( msg )
+        return self.send_instruction( msg, exceptionOnErrorResponse = False )
 
-    def send_instruction(self, instruction):
+    def send_instruction(self, instruction, exceptionOnErrorResponse = True):
+        ''' send_instruction with Retries
+        '''
         msg = [ self.servo_id, len(instruction) + 1 ] + instruction # instruction includes the command (1 byte + parameters. length = parameters+2)
         chksum = self.__calc_checksum( msg )
         msg = [ 0xff, 0xff ] + msg + [chksum]
         
         self.dyn.acq_mutex()
         try:
-            self.send_serial( msg )
-            self.dyn.servo_dev.flushInput()
-            data, err = self.receive_reply()
+            failures = 0
+            while True:
+                try:
+                    self.send_serial( msg )
+                    self.dyn.servo_dev.flushInput()
+                    data, err = self.receive_reply()
+                    break
+                except (CommunicationError, serial.SerialException) as e:
+                    failures += 1
+                    if failures > 3:
+                        raise
+                    warning("send_instruction retry %d, error: %s"%(failures, e.message))
         except:
             self.dyn.rel_mutex()
             raise
         self.dyn.rel_mutex()
         
-        if err != 0:
-            self.process_err( err )
-
-        return data
+        if exceptionOnErrorResponse:
+            if err != 0:
+                self.process_err( err )
+            return data
+        else:
+            return data, err
 
     def read_wordX(self, addr):
         data, err = self.read_addressX( addr, 2 )
@@ -302,24 +318,7 @@ class Robotis_Servo():
             returns [n1,n2 ...] (list of parameters)
         '''
         msg = [ 0x02, address, nBytes ]
-        return self.send_instructionX( msg )
-
-    def send_instructionX(self, instruction):
-        msg = [ self.servo_id, len(instruction) + 1 ] + instruction # instruction includes the command (1 byte + parameters. length = parameters+2)
-        chksum = self.__calc_checksum( msg )
-        msg = [ 0xff, 0xff ] + msg + [chksum]
-        
-        self.dyn.acq_mutex()
-        try:
-            self.send_serial( msg )
-            self.dyn.servo_dev.flushInput()
-            data, err = self.receive_reply()
-        except:
-            self.dyn.rel_mutex()
-            raise
-        self.dyn.rel_mutex()
-        
-        return data, err
+        return self.send_instruction( msg, exceptionOnErrorResponse = False )
 
     def process_err( self, err ):
         raise ErrorResponse(err)
@@ -330,7 +329,7 @@ class Robotis_Servo():
             one = self.dyn.read_serial( 1 )
             if len(one) == 0:
                 # timeout
-                raise CommunicationError('lib_robotis: Failed to receive start bytes\n')
+                raise CommunicationError('lib_robotis: Failed to receive start bytes')
             #print ord(one[0])
             if one == '\xff':
                 start_bytes_received += 1
@@ -339,7 +338,7 @@ class Robotis_Servo():
 
         servo_id = self.dyn.read_serial( 1 )
         if ord(servo_id) != self.servo_id:
-            raise CommunicationError('lib_robotis: Incorrect servo ID received: %d\n' % ord(servo_id))
+            raise CommunicationError('lib_robotis: Incorrect servo ID received: %d' % ord(servo_id))
         data_len = self.dyn.read_serial( 1 )
         err = self.dyn.read_serial( 1 )
         data = self.dyn.read_serial( ord(data_len) - 2 )
