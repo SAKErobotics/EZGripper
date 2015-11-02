@@ -39,6 +39,8 @@ import thread
 import sys, optparse
 import math
 import string
+import socket 
+from select import select
 
 def warning(msg):
     print >> sys.stderr, msg
@@ -53,6 +55,58 @@ class CommunicationError(RuntimeError):
     def __init__(self, text):
         RuntimeError.__init__(self, text)
 
+def create_connection(dev_name = '/dev/ttyUSB0', baudrate = 57600):
+    parts = dev_name.split(':')
+    if len(parts) == 2:
+        return TCP_Device(parts[0], int(parts[1]))
+    else:
+        return USB2Dynamixel_Device(dev_name, baudrate)
+
+
+class TCP_Device():
+    def __init__(self, host, port):
+        self.dev_name = host + ':' + str(port)
+        self.mutex = thread.allocate_lock()
+        
+        self.acq_mutex()
+        try:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.settimeout(5.0)
+            self.sock.connect((host, port))
+            self.sock.settimeout(0.2)
+        except Exception as e:
+            warning("Error connecting to %s: %s"%(self.dev_name, e))
+            raise
+        self.rel_mutex()
+        
+    def acq_mutex(self):
+        self.mutex.acquire()
+
+    def rel_mutex(self):
+        self.mutex.release()
+
+    def send_serial(self, msg):
+        self.sock.sendall(msg)
+
+    def flush_input(self):
+        readable, _, _ = select([self.sock], [], [], 0)
+        if readable:
+            print "flush_input: doing actual recv"
+            self.sock.recv(4096, socket.MSG_DONTWAIT)
+
+    def read_serial(self, nBytes=1):
+        # It is up to the caller to acquire / release mutex
+        chunks = []
+        bytes_recd = 0
+        while bytes_recd < nBytes:
+            chunk = self.sock.recv(min(nBytes - bytes_recd, 2048))
+            if chunk == '':
+                raise RuntimeError("socket connection broken")
+            chunks.append(chunk)
+            bytes_recd = bytes_recd + len(chunk)
+        return ''.join(chunks)        
+    
+    
 class USB2Dynamixel_Device():
     ''' Class that manages serial port contention between servos on same bus
     '''
@@ -79,10 +133,16 @@ class USB2Dynamixel_Device():
         # It is up to the caller to acquire / release mutex
         self.servo_dev.write( msg )
 
+    def flush_input(self):
+        self.servo_dev.flushInput()
+
     def read_serial(self, nBytes=1):
         # It is up to the caller to acquire / release mutex
         rep = self.servo_dev.read( nBytes )
+        if len(rep) < nBytes:
+            raise CommunicationError('read_serial: not enough bytes received (expected %d, received %d)'%(nBytes, len(rep)))
         return rep
+        
 
     def _open_serial(self, baudrate):
         try:
@@ -126,10 +186,10 @@ class Robotis_Servo():
         self.servo_id = servo_id
         try:
             self.read_address(3)
-        except:
+        except Exception as e:
+            print "Exception:", e.message
             print "Get ID failed once, retrying"
-            self.dyn.servo_dev.flushOutput()
-            self.dyn.servo_dev.flushInput()
+            self.dyn.flush_input()
             try:
                 self.read_address(3)
             except:
@@ -140,9 +200,9 @@ class Robotis_Servo():
         data = self.read_address( 0x05, 1)
         self.return_delay = data[0] * 2e-6
 
+        
     def flushAll(self):
-        self.dyn.servo_dev.flushOutput()
-        self.dyn.servo_dev.flushInput()
+        self.dyn.flush_input()
 
     def init_cont_turn(self):
         '''sets CCW angle limit to zero and allows continuous turning (good for wheels).
@@ -245,6 +305,12 @@ class Robotis_Servo():
         hi,lo = word / 256, word % 256
         return self.write_addressX( addr, [lo,hi] )        
         
+    def __calc_checksum_str(self, msg):
+        cs = 0
+        for c in msg:
+            cs += ord(c)
+        return ( ~cs ) & 0xFF
+
     def __calc_checksum(self, msg):
         chksum = 0
         for m in msg:
@@ -287,11 +353,13 @@ class Robotis_Servo():
             failures = 0
             while True:
                 try:
+                    self.dyn.flush_input()
                     self.send_serial( msg )
-                    self.dyn.servo_dev.flushInput()
                     data, err = self.receive_reply()
+                    if err & 16 != 0:
+                        raise CommunicationError("Dynamixel error 16 - sent packet checksum invalid")
                     break
-                except (CommunicationError, serial.SerialException) as e:
+                except (CommunicationError, serial.SerialException, socket.timeout) as e:
                     failures += 1
                     if failures > 3:
                         raise
@@ -325,24 +393,28 @@ class Robotis_Servo():
 
     def receive_reply(self):
         start_bytes_received = 0
+        #skipped_bytes = []
         while (start_bytes_received < 2):
             one = self.dyn.read_serial( 1 )
-            if len(one) == 0:
-                # timeout
-                raise CommunicationError('lib_robotis: Failed to receive start bytes')
             #print ord(one[0])
             if one == '\xff':
                 start_bytes_received += 1
             else:
+                #skipped_bytes += one
                 start_bytes_received = 0
 
+        #if len(skipped_bytes) > 0:
+        #    print 'Skipped bytes:', skipped_bytes
         servo_id = self.dyn.read_serial( 1 )
         if ord(servo_id) != self.servo_id:
-            raise CommunicationError('lib_robotis: Incorrect servo ID received: %d' % ord(servo_id))
+            raise CommunicationError('lib_robotis: Incorrect servo ID received: %d, expected %d' % (ord(servo_id), self.servo_id))
         data_len = self.dyn.read_serial( 1 )
         err = self.dyn.read_serial( 1 )
         data = self.dyn.read_serial( ord(data_len) - 2 )
-        _ = self.dyn.read_serial( 1 ) # I'm not going to check the checksum
+        chksum_in = ord(self.dyn.read_serial( 1 ))
+        chksum_calc = self.__calc_checksum_str(servo_id + data_len + err + data)
+        if chksum_calc != chksum_in:
+            raise CommunicationError('Checksum mismatch: calculated %02X, received %02X'%(chksum_calc, chksum_in))
         return [ord(v) for v in data], ord(err)
         
 

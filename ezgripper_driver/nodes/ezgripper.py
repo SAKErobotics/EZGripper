@@ -38,7 +38,7 @@
 
 import rospy
 from std_srvs.srv import Empty, EmptyResponse
-from ezgripper_libs.lib_robotis import USB2Dynamixel_Device, Robotis_Servo
+from ezgripper_libs.lib_robotis import create_connection, Robotis_Servo
 import actionlib
 from control_msgs.msg import GripperCommandAction, GripperCommandResult
 from math import acos, radians
@@ -217,7 +217,7 @@ grip_min = 0
 torque_max = 350 # maximum torque - MX-64=500, MX-106=350
 torque_hold = 100 # holding torque - MX-64=100, MX-106=80
 
-dyn = USB2Dynamixel_Device(port_name, baud)
+dyn = create_connection(port_name, baud)
 
 all_servos = []
 references = []

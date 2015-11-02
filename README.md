@@ -14,8 +14,8 @@
 	$ catkin_make
 
 3) Setup parameters in joy.launch file
-  - ~port - serial device to use
-  - ~baud - baud rate
+  - ~port - serial device (like "/dev/ttyUSB0") or tcp endpoint (like "192.168.0.200:5000") to use
+  - ~baud - baud rate of the serial device, not used for tcp
   - grippers - definition of grippers on this serial bus: the gripper name to use for the action interface and the servo id of the gripper (several ids if several grippers are to be used as one group), for example {left:[9], right:[10,11]}
 
 4) Launch the node
