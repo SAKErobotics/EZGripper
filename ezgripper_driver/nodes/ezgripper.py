@@ -41,6 +41,7 @@ from std_srvs.srv import Empty, EmptyResponse
 from ezgripper_libs.lib_robotis import create_connection, Robotis_Servo
 import actionlib
 from control_msgs.msg import GripperCommandAction, GripperCommandResult
+from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
 from math import acos, radians
 from functools import partial
 
@@ -202,6 +203,36 @@ class GripperActionServer:
         self.action_server.set_succeeded(result)    
         rospy.loginfo("Go to position: done")
     
+def send_diags():
+    # See diagnostics with: rosrun rqt_runtime_monitor rqt_runtime_monitor
+    msg = DiagnosticArray()
+    msg.status = []
+    msg.header.stamp = rospy.Time.now()
+    
+    for gripper in grippers:
+        for servo in gripper.servos:
+            status = DiagnosticStatus()
+            status.name = "Gripper '%s' servo %d"%(gripper.name, servo.servo_id)
+            status.hardware_id = '%s'%servo.servo_id
+            temperature = servo.read_temperature()
+            status.values.append(KeyValue('Temperature', str(temperature)))
+            status.values.append(KeyValue('Voltage', str(servo.read_voltage())))
+    
+            if temperature >= 70:
+                status.level = DiagnosticStatus.ERROR
+                status.message = 'OVERHEATING'
+            elif temperature >= 65:
+                status.level = DiagnosticStatus.WARN
+                status.message = 'HOT'
+            else:
+                status.level = DiagnosticStatus.OK
+                status.message = 'OK'
+        
+            msg.status.append(status)
+    
+    diagnostics_pub.publish(msg)
+    
+
 
 # Main Program
 
@@ -211,6 +242,8 @@ rospy.loginfo("Started")
 port_name = rospy.get_param('~port', '/dev/ttyUSB0')
 baud = int(rospy.get_param('~baud', '57600'))
 gripper_params = rospy.get_param('~grippers')
+
+diagnostics_pub = rospy.Publisher('/diagnostics', DiagnosticArray)
 
 distance_between_fingers = 0.05 # meters
 finger_link_length = 0.065
@@ -227,6 +260,7 @@ dyn = create_connection(port_name, baud)
 
 all_servos = []
 references = []
+grippers = []
 
 for gripper_name, servo_ids in gripper_params.iteritems():
     gripper = Gripper(gripper_name, servo_ids)
@@ -237,16 +271,27 @@ for gripper_name, servo_ids in gripper_params.iteritems():
     
     references.append( rospy.Service('~'+gripper_name+'/calibrate', Empty, partial(calibrate_srv, gripper)) )
     references.append( GripperActionServer('~'+gripper_name, gripper) )
+    
+    grippers.append(gripper)
 
 # Main Loop
 
 r = rospy.Rate(20) # hz
+diags_last_sent = 0
 while not rospy.is_shutdown():
+    now = rospy.get_time()
+    if now - diags_last_sent > 1.0:
+        try:
+            send_diags()
+            diags_last_sent = now
+        except Exception, e:
+            rospy.logerr("Exception while reading diagnostics: %s"%e)
+            
     for servo in all_servos:
         try:
             servo.check_overload_and_recover()
         except Exception, e:
-            rospy.logerr("Exception: %s"%e)
+            rospy.logerr("Exception while checking overload: %s"%e)
             servo.flushAll()
 
     r.sleep()
