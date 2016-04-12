@@ -94,6 +94,7 @@ class Gripper:
         
         for servo in self.servos:
             servo.write_address(6, [255,15,255,15] )   # 1) "Multi-Turn" - ON
+            servo.write_word(20, 0)                    # 4) set "Multi turn offset" to 0 -- this command affects torque settings, so it was moved before initial torque is applied. 
             servo.write_word(34, 500)                  # 2) "Torque Limit" to 500 (or so)
             servo.write_address(24, [0])               # 3) "Torque Enable" to OFF
             servo.write_address(70, [1])               # 1) Set "Goal Torque Mode" to ON
@@ -102,13 +103,15 @@ class Gripper:
         rospy.sleep(2.0)                               # give it time to stop
         
         for servo in self.servos:
-            servo.write_word(20, 0)                    # 4) set "Multi turn offset" to 0 -- this command affects torque settings, so it was moved before initial torque is applied. 
             position = servo.read_word(36)
             servo.write_address(70, [0])               
+            rospy.sleep(.5)
             servo.write_word(20,-position)
-            position = servo.read_word(36)
-            multiturnoffset = servo.read_word(20)
-            servo.write_word(20, multiturnoffset - position)
+            #servo.write_word(20, 0)                    # 4) set "Multi turn offset" to 0 -- this command affects torque settings, so it was moved before initial torque is applied. 
+            #position = servo.read_word(36)
+            #servo.write_word(20,-position)
+            #multiturnoffset = servo.read_word(20)
+            #servo.write_word(20, multiturnoffset - position)
             
         rospy.loginfo("Calibration completed")
     
