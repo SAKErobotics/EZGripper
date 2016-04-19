@@ -104,14 +104,15 @@ class Gripper:
         
         for servo in self.servos:
             position = servo.read_word(36)
-            servo.write_address(70, [0])               
-            rospy.sleep(.5)
+            servo.write_address(70, [0])               # Stopping torque here improves makes writing "multi-word offset" consistent
             servo.write_word(20,-position)
-            #servo.write_word(20, 0)                    # 4) set "Multi turn offset" to 0 -- this command affects torque settings, so it was moved before initial torque is applied. 
-            #position = servo.read_word(36)
-            #servo.write_word(20,-position)
-            #multiturnoffset = servo.read_word(20)
-            #servo.write_word(20, multiturnoffset - position)
+            
+            # The reported position sometimes is off by a rotation (4096)
+            # after the first multiturn offset write. Recalculating the offset
+            # once more seems to help.
+            position = servo.read_word(36)
+            multiturnoffset = servo.read_word(20)
+            servo.write_word(20, multiturnoffset - position)
             
         rospy.loginfo("Calibration completed")
     
