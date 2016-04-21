@@ -341,6 +341,18 @@ class Robotis_Servo():
         msg = [ 0x03, address ] + data
         return self.send_instruction( msg, exceptionOnErrorResponse = False )
 
+    def ensure_byte_set(self, address, byte):
+        value = self.read_address(address)[0]
+        if value != byte:
+            print 'Servo [%d]: change setting %d from %d to %d'%(self.servo_id, address, value, byte)
+            self.write_address(address, [byte])
+        
+    def ensure_word_set(self, address, word):
+        value = self.read_word(address)
+        if value != word:
+            print 'Servo [%d]: change setting %d from %d to %d (word)'%(self.servo_id, address, value, word)
+            self.write_word(address, word)
+    
     def send_instruction(self, instruction, exceptionOnErrorResponse = True):
         ''' send_instruction with Retries
         '''

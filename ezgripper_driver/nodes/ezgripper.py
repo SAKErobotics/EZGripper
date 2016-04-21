@@ -265,6 +265,8 @@ grippers = []
 for gripper_name, servo_ids in gripper_params.iteritems():
     gripper = Gripper(gripper_name, servo_ids)
     all_servos += gripper.servos
+    for servo in gripper.servos:
+        servo.ensure_byte_set(22, 1) # Make sure 'Resolution divider' is set to 1
 
     gripper.calibrate()
     gripper.open()
