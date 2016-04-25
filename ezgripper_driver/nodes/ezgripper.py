@@ -94,25 +94,19 @@ class Gripper:
         
         for servo in self.servos:
             servo.write_address(6, [255,15,255,15] )   # 1) "Multi-Turn" - ON
-            servo.write_word(20, 0)                    # 4) set "Multi turn offset" to 0 -- this command affects torque settings, so it was moved before initial torque is applied. 
             servo.write_word(34, 500)                  # 2) "Torque Limit" to 500 (or so)
             servo.write_address(24, [0])               # 3) "Torque Enable" to OFF
-            servo.write_address(70, [1])               # 1) Set "Goal Torque Mode" to ON
-            servo.write_word(71, 1024 + 100)           # 2) Set "Goal Torque" Direction to CW and Value 100
+            servo.write_address(70, [1])               # 4) Set "Goal Torque Mode" to ON
+            servo.write_word(71, 1024 + 100)           # 5) Set "Goal Torque" Direction to CW and Value 100
         
-        rospy.sleep(2.0)                               # give it time to stop
+        rospy.sleep(4.0)                               # 6) give it time to stop
         
         for servo in self.servos:
-            position = servo.read_word(36)
+            servo.write_word(71, 1024 + 10)            # 7) Set "Goal Torque" Direction to CW and Value 10 - reduce load on servo
+            servo.write_word(20, 0)                    # 8) set "Multi turn offset" to 0   
+            position = servo.read_word(36)             # 9) read current position of servo
+            servo.write_word(20, -position)
             servo.write_address(70, [0])               # Stopping torque here improves makes writing "multi-word offset" consistent
-            servo.write_word(20,-position)
-            
-            # The reported position sometimes is off by a rotation (4096)
-            # after the first multiturn offset write. Recalculating the offset
-            # once more seems to help.
-            position = servo.read_word(36)
-            multiturnoffset = servo.read_word(20)
-            servo.write_word(20, multiturnoffset - position)
             
         rospy.loginfo("Calibration completed")
     
@@ -249,7 +243,7 @@ distance_between_fingers = 0.05 # meters
 finger_link_length = 0.065
 max_gap = distance_between_fingers + finger_link_length * 2
 
-grip_max = 2800 #maximum open position for grippers
+grip_max = 2500 #maximum open position for grippers
 grip_angle_max = radians(102) # 102 degrees, in radians
 grip_min = 0
 
