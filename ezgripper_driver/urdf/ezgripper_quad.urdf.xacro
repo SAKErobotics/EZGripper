@@ -98,18 +98,6 @@
 <gazebostuff postfix2="3"/>
 <gazebostuff postfix2="4"/>
 
-  <gazebo>
-    <plugin filename="libdynamixel_pro_controller_gazebo.so" name="dmx_controller">
-      <config>
-        <pkg>
-          ezgripper_driver
-        </pkg>
-        <file>
-          config/controller_config.yaml
-        </file>
-      </config>
-    </plugin>
-  </gazebo>
 
 
 </robot>
