@@ -253,7 +253,7 @@ grip_max = 2500 #maximum open position for grippers
 #grip_angle_max = radians(102) # 102 degrees, in radians
 grip_min = 0
 
-torque_max = 850 # maximum torque - MX-64=500, MX-106=350
+torque_max = 350 # maximum torque - MX-64=500, MX-106=350
 torque_hold = 100 # holding torque - MX-64=100, MX-106=80
 
 dyn = create_connection(port_name, baud)
