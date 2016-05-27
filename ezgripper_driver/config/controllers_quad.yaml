@@ -1,0 +1,7 @@
+arm_controller:
+  type: "position_controllers/JointTrajectoryController"
+  joints:
+    - knuckle_1
+    - knuckle_2
+    - knuckle_3
+    - knuckle_4
