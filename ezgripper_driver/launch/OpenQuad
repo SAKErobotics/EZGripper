@@ -1,0 +1,2 @@
+rostopic pub /arm_controller/command trajectory_msgs/JointTrajectory '{joint_names: ["knuckle_1","knuckle_2","knuckle_3","knuckle_4"], points: [{positions: [1.6,1.6,1.6,1.6], time_from_start: [1.0, 0.0]}]}' -1
+
