@@ -64,7 +64,7 @@ def wait_for_stop(servo):
         last_position = current_position
         rospy.sleep(0.1)                         
         
-        if (rospy.get_rostime() - wait_start).to_sec() > 5.0:
+        if (rospy.get_rostime() - wait_start).to_sec() > .2:
             break
 
 def calibrate_srv(gripper, msg):
@@ -122,7 +122,8 @@ class Gripper:
         wait_for_stop(self.servos[0])
         
         for servo in self.servos:
-            self.set_max_effort(torque_hold/10.23) # set_max_effort scales from 0-100 to 0-1023, hence /10.23
+            holding_torque = min(torque_hold/10.23, closing_torque) # torque_hold is defined in MX-64 1024 range (so divide by 10.23 to move to 0-100 range)
+            self.set_max_effort(holding_torque) 
     
     def set_max_effort(self, max_effort):
              # sets torque for moving to position (moving_torque) and for torque only mode (torque_mode_max_effort)
@@ -137,10 +138,12 @@ class Gripper:
             moving_torque = int(max_effort*10.23) # max dynamixel torque is 0-1023(unitless) so 100 * 10.23 is maximum value of dynamixel force
             servo.write_word(34, moving_torque) # torque for moving to position,and due to Dynamixel architecture, this also limits max value for register 71 below
 
+            rospy.loginfo("EZGripper moving torque: %d" %moving_torque) 
+
             torque_mode_max_effort = int(max_effort * 10.23)
-            if torque_mode_max_effort > torque_max: torque_mode_max_effort = int(torque_max) # torque limited to not overload the servo
+            if torque_mode_max_effort > torque_max: torque_mode_max_effort = int(torque_max) # torque limited for torque mode because it is generally not needed and reduces system stress
             servo.write_word(71, 1024+torque_mode_max_effort) # torque mode of closing gripper
-        rospy.loginfo("Dynamixel goal torque: %d" %max_effort) 
+            rospy.loginfo("EZGripper goal torque: %d" %torque_mode_max_effort) 
 
     def goto_position(self, position):
         for servo in self.servos:
@@ -194,7 +197,8 @@ class GripperActionServer:
         self.gripper.set_max_effort(closing_torque)  # essentially sets velocity of movement, but also sets max_effort for initial half second of grasp.
         self.gripper.goto_position(int(servo_position))
         # sets torque to keep gripper in position, but does not apply torque if there is no load.  This does not provide continuous grasping torque.
-        self.gripper.set_max_effort(torque_hold/10.23) #
+        holding_torque = min(torque_hold, closing_torque)
+        self.gripper.set_max_effort(holding_torque) #
         result = GripperCommandResult()
         result.position = goal.command.position #not necessarily the current position of the gripper if the gripper did not reach its goal position.
         result.effort = goal.command.max_effort
@@ -267,6 +271,9 @@ for gripper_name, servo_ids in gripper_params.iteritems():
     all_servos += gripper.servos
     for servo in gripper.servos:
         servo.ensure_byte_set(22, 1) # Make sure 'Resolution divider' is set to 1
+        #servo.write_address(28,255) # Set PID P=255
+        #servo.write_address(27,[0]) # Set PID I=0
+        #servo.write_address(26,[0,0,255]) # Set PID D=0
 
     gripper.calibrate()
     gripper.open()
