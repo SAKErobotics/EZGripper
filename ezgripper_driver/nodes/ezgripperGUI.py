@@ -3,11 +3,11 @@
 
 import rospy
 import sys
-import ezgripper_interface
+from ezgripper_libs.ezgripper_interface import EZGripper
 from PyQt4 import QtGui, QtCore
 
 rospy.init_node('hello_ezgripper')
-gripper = ezgripper_interface.EZGripper('ezgripper/main')
+gripper = EZGripper('ezgripper/main')
 
 class GripperGUI(QtGui.QMainWindow):
 

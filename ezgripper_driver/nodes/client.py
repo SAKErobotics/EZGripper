@@ -33,14 +33,14 @@
 
 import rospy
 from sensor_msgs.msg import Joy
-import ezgripper_interface
+from ezgripper_libs.ezgripper_interface import EZGripper
 
 
 class EZGripperJoy(object):
     def __init__(self, gripper_names):
-        self.ezgripper_left = ezgripper_interface.EZGripper(gripper_names[0])
+        self.ezgripper_left = EZGripper(gripper_names[0])
         if len(gripper_names) > 1:
-            self.ezgripper_right = ezgripper_interface.EZGripper(gripper_names[1])
+            self.ezgripper_right = EZGripper(gripper_names[1])
         else:
             self.ezgripper_right = None
         self.last_command_end_time = rospy.get_rostime()
