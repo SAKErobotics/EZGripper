@@ -6,7 +6,7 @@
 
   <node pkg="ezgripper_driver" type="ezgripper.py" name="ezgripper" output="screen">
     <param name="~port" value="192.168.0.200:5000"/>
-    <rosparam param="grippers">{main:[11]}</rosparam>
+    <rosparam param="grippers">{main:[1]}</rosparam>
   </node>
   
   <node pkg="ezgripper_driver" type="client.py" name="ezgripper_client" output="screen">
