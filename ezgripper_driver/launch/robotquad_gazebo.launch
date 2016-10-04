@@ -2,7 +2,7 @@
   
 	<param name="robot_description" command="$(find xacro)/xacro '$(find ezgripper_driver)/urdf/ezgripper_quad_standalone.urdf.xacro'" /> 
 
-  <rosparam file="$(find ezgripper_driver)/config/controllers.yaml" command="load"/> 
+  <rosparam file="$(find ezgripper_driver)/config/controllers_quad.yaml" command="load"/> 
   <node name="controller_spawner" pkg="controller_manager" type="spawner" args="arm_controller"/>
 
   <!-- Start Gazebo with an empty world -->
