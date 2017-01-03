@@ -64,7 +64,8 @@ def wait_for_stop(servo):
         last_position = current_position
         rospy.sleep(0.1)                         
         
-        if (rospy.get_rostime() - wait_start).to_sec() > .2:
+        if (rospy.get_rostime() - wait_start).to_sec() > 5.0:
+            # If have to wait more than this then something is wrong, better break out of here
             break
 
 def calibrate_srv(gripper, msg):
@@ -190,14 +191,13 @@ class GripperActionServer:
             return
         
         rospy.loginfo("Go to position: start")
-                 #servo_position = servo_position_from_gap(goal.command.position)
         servo_position = servo_position_from_gap(goal.command.position)
         rospy.loginfo("Target position: %.3f (%d)"%(goal.command.position, servo_position))
         closing_torque = int(goal.command.max_effort) # TODO: need a more accurate calculation
         self.gripper.set_max_effort(closing_torque)  # essentially sets velocity of movement, but also sets max_effort for initial half second of grasp.
         self.gripper.goto_position(int(servo_position))
         # sets torque to keep gripper in position, but does not apply torque if there is no load.  This does not provide continuous grasping torque.
-        holding_torque = min(torque_hold, closing_torque)
+        holding_torque = min(torque_hold/10.23, closing_torque)
         self.gripper.set_max_effort(holding_torque) #
         result = GripperCommandResult()
         result.position = goal.command.position #not necessarily the current position of the gripper if the gripper did not reach its goal position.
