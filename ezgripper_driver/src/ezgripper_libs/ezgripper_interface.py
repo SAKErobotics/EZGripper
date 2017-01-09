@@ -90,7 +90,7 @@ class EZGripper(object):
         rospy.loginfo("ezgripper_interface: goto position %.3f"%self._grip_value)
         goal = GripperCommandGoal()
         goal.command.position = self._grip_value
-        goal.command.max_effort = 25.0
+        goal.command.max_effort = 50.0
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: goto position done")
 
@@ -101,7 +101,7 @@ class EZGripper(object):
         rospy.loginfo("ezgripper_interface: goto position %.3f"%self._grip_value)
         goal = GripperCommandGoal()
         goal.command.position = self._grip_value
-        goal.command.max_effort = 25.0
+        goal.command.max_effort = 50.0
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: goto position done")
 
@@ -118,7 +118,7 @@ class EZGripper(object):
         rospy.loginfo("ezgripper_interface: hard close")
         goal = GripperCommandGoal()
         goal.command.position = 0.0
-        goal.command.max_effort = 35 # >0 to 100
+        goal.command.max_effort = 100 # >0 to 100
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: hard close done")
         self._grip_value = self._grip_min
@@ -127,7 +127,7 @@ class EZGripper(object):
         rospy.loginfo("ezgripper_interface: soft close")
         goal = GripperCommandGoal()
         goal.command.position = 0.0
-        goal.command.max_effort = 10.0 # >0 to 100
+        goal.command.max_effort = 20.0 # >0 to 100
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: soft close done")
         self._grip_value = self._grip_min
@@ -136,7 +136,7 @@ class EZGripper(object):
         rospy.loginfo("ezgripper_interface: open")
         goal = GripperCommandGoal()
         goal.command.position = 1.0   # 100% range(0.01 to 1.0)
-        goal.command.max_effort = 20.0 # >0 to 100
+        goal.command.max_effort = 100.0 # >0 to 100
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: open done")
         self._grip_value = self._grip_max

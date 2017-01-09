@@ -42,7 +42,7 @@ from ezgripper_libs.lib_robotis import create_connection, Robotis_Servo
 import actionlib
 from control_msgs.msg import GripperCommandAction, GripperCommandResult
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
-from math import acos, radians
+from math import radians
 from functools import partial
 
 
@@ -82,7 +82,14 @@ def servo_position_from_gap(gap):
     if position > 1: position = 1  #Full open
     position = position * grip_max #this translates percent to servo range
     return int(position)
-    
+
+def scale(n, to_max):
+    # Scale from 0..100 to 0..to_max
+    result = int(n * to_max / 100)
+    if result > to_max: result = to_max
+    if result < 0: result = 0
+    return result
+
 class Gripper:
     def __init__(self, name, servo_ids):
         self.name = name
@@ -123,28 +130,21 @@ class Gripper:
         wait_for_stop(self.servos[0])
         
         for servo in self.servos:
-            holding_torque = min(torque_hold/10.23, closing_torque) # torque_hold is defined in MX-64 1024 range (so divide by 10.23 to move to 0-100 range)
+            holding_torque = min(torque_hold*100/torque_max, closing_torque) # torque_hold is defined in MX-64 1024 range (so divide by 10.23 to move to 0-100 range)
             self.set_max_effort(holding_torque) 
     
     def set_max_effort(self, max_effort):
-             # sets torque for moving to position (moving_torque) and for torque only mode (torque_mode_max_effort)
-             # range 0-100% (0-100) - this range is in 0-100 whole numbers so that it can be used where Newton force is expected
-        if max_effort > 100: 
-            max_effort = 100
-            rospy.loginfo("max_effort cannot be > 100, overriding to 100")
-        if max_effort < 0: 
-            max_effort = 0
-            rospy.loginfo("max_effort cannot be < 0, overriding to 0")
+        # sets torque for moving to position (moving_torque) and for torque only mode (torque_mode_max_effort)
+        # range 0-100% (0-100) - this range is in 0-100 whole numbers so that it can be used where Newton force is expected
+        # max dynamixel torque is 0-1023(unitless), but we use only up to torque_max
+
+        torque_mode_max_effort = moving_torque = scale(max_effort, torque_max)
+
+        rospy.loginfo("set_max_effort(%d): moving torque: %d, goal torque: %d"%(
+                    max_effort, moving_torque, torque_mode_max_effort))
         for servo in self.servos:
-            moving_torque = int(max_effort*10.23) # max dynamixel torque is 0-1023(unitless) so 100 * 10.23 is maximum value of dynamixel force
             servo.write_word(34, moving_torque) # torque for moving to position,and due to Dynamixel architecture, this also limits max value for register 71 below
-
-            rospy.loginfo("EZGripper moving torque: %d" %moving_torque) 
-
-            torque_mode_max_effort = int(max_effort * 10.23)
-            if torque_mode_max_effort > torque_max: torque_mode_max_effort = int(torque_max) # torque limited for torque mode because it is generally not needed and reduces system stress
             servo.write_word(71, 1024+torque_mode_max_effort) # torque mode of closing gripper
-            rospy.loginfo("EZGripper goal torque: %d" %torque_mode_max_effort) 
 
     def goto_position(self, position):
         for servo in self.servos:
@@ -197,7 +197,7 @@ class GripperActionServer:
         self.gripper.set_max_effort(closing_torque)  # essentially sets velocity of movement, but also sets max_effort for initial half second of grasp.
         self.gripper.goto_position(int(servo_position))
         # sets torque to keep gripper in position, but does not apply torque if there is no load.  This does not provide continuous grasping torque.
-        holding_torque = min(torque_hold/10.23, closing_torque)
+        holding_torque = min(torque_hold*100/torque_max, closing_torque)
         self.gripper.set_max_effort(holding_torque) #
         result = GripperCommandResult()
         result.position = goal.command.position #not necessarily the current position of the gripper if the gripper did not reach its goal position.
@@ -257,7 +257,7 @@ grip_max = 2500 #maximum open position for grippers
 #grip_angle_max = radians(102) # 102 degrees, in radians
 grip_min = 0
 
-torque_max = 350 # maximum torque - MX-64=500, MX-106=350
+torque_max = 800 # maximum torque - MX-64=500, MX-106=350
 torque_hold = 100 # holding torque - MX-64=100, MX-106=80
 
 dyn = create_connection(port_name, baud)
