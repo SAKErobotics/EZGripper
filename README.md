@@ -1,5 +1,7 @@
 # EZGripper
 
+These are the EZGripper ROS drivers.  If you are not using ROS, use https://github.com/SAKErobotics/libezgripper
+
 ## Install the EZGripper ROS Driver
 
 1) Install dependencies:
