@@ -5,7 +5,7 @@
 
 
 
-<macro name="ezgripper_dual" params="prefix parent_link *origin">
+<macro name="ezgripper_dual_gen2" params="prefix parent_link *origin">
  
 
     <!-- links -->
@@ -14,13 +14,13 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="package://ezgripper_driver/meshes/visual/SAKE_Palm_Dual.stl"/>
+          <mesh filename="package://ezgripper_driver/meshes/visual/SAKE_Palm_Dual_Gen2.stl"/>
         </geometry>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="package://ezgripper_driver/meshes/collision/SAKE_Palm_Dual.stl"/>
+          <mesh filename="package://ezgripper_driver/meshes/collision/SAKE_Palm_Dual_Gen2.stl"/>
         </geometry>
       </collision>
     <inertial>
@@ -56,13 +56,13 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="package://ezgripper_driver/meshes/visual/SAKE_Finger.stl"/>
+          <mesh filename="package://ezgripper_driver/meshes/visual/SAKE_Finger_Gen2.stl"/>
         </geometry>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="package://ezgripper_driver/meshes/collision/SAKE_Finger.stl"/>
+          <mesh filename="package://ezgripper_driver/meshes/collision/SAKE_Finger_Gen2.stl"/>
         </geometry>
       </collision>
       <inertial>
