@@ -39,6 +39,10 @@ These are the EZGripper ROS drivers.  If you are not using ROS, use https://gith
 The driver provides an implementation of the SimpleActionServer, that takes in [control_msgs/GripperCommand](http://docs.ros.org/indigo/api/control_msgs/html/action/GripperCommand.html) actions.
 A sample client ([nodes/client.py](ezgripper_driver/nodes/client.py)) is included that provides joystick control using the action API.
 
+## urdf Models
+
+see README.md in the urdf directory.
+
 ## TroubleShooting
 
 Serial connection issues:
@@ -50,7 +54,7 @@ Serial connection issues:
 	$ sudo adduser <user> dialout
 	reboot
 	
-	
+
 
 	
 	
