@@ -38,3 +38,20 @@ These are the EZGripper ROS drivers.  If you are not using ROS, use https://gith
 
 The driver provides an implementation of the SimpleActionServer, that takes in [control_msgs/GripperCommand](http://docs.ros.org/indigo/api/control_msgs/html/action/GripperCommand.html) actions.
 A sample client ([nodes/client.py](ezgripper_driver/nodes/client.py)) is included that provides joystick control using the action API.
+
+## TroubleShooting
+
+Serial connection issues:
+
+	Error message: 'Serial' object has no attribute 'setParity'  --- this message indicates you have a new version of serial library that causes issues.  Do the following command to load an older pySerial library.
+	$ sudo pip install "pySerial>=2.0,<=2.9999"
+	
+	Error message: permission denied (get accurate error message).  This indicates the user does not have privellages to use the /dev/ttyUSBx.  The solution is to add the <user> to the "dialout" group.  After executing the following command, reboot.
+	$ sudo adduser <user> dialout
+	reboot
+	
+	
+
+	
+	
+	
