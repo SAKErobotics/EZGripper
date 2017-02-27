@@ -44,10 +44,10 @@ A sample client ([nodes/client.py](ezgripper_driver/nodes/client.py)) is include
 Serial connection issues:
 
 	Error message: 'Serial' object has no attribute 'setParity'  --- this message indicates you have a new version of serial library that causes issues.  Do the following command to load an older pySerial library.
-	$ pip install "pySerial>=2.0,<=2.9999"
+	$ sudo pip install "pySerial>=2.0,<=2.9999"
 	
 	Error message: permission denied (get accurate error message).  This indicates the user does not have privellages to use the /dev/ttyUSBx.  The solution is to add the <user> to the "dialout" group.  After executing the following command, reboot.
-	$ adduser <user> dialout
+	$ sudo adduser <user> dialout
 	reboot
 	
 	
