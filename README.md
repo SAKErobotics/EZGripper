@@ -42,6 +42,8 @@ A sample client ([nodes/client.py](ezgripper_driver/nodes/client.py)) is include
 ## urdf Models
 
 see README.md in the urdf directory.
+https://github.com/SAKErobotics/EZGripper/tree/master/ezgripper_driver/urdf
+
 
 ## TroubleShooting
 
