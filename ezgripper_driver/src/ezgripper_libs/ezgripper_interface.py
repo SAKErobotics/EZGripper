@@ -37,7 +37,7 @@ from control_msgs.msg import GripperCommandAction, GripperCommandGoal
 from std_srvs.srv import Empty
 
 # http://docs.ros.org/indigo/api/control_msgs/html/msg/GripperCommand.html
-# float64 position  # if 0, torque mode, if >0 to 1 correlates to 0-100% rotation range
+# float64 position  # if 0, torque mode, if >0 to 100 correlates to 0-100% rotation range
 # float64 max_effort  # if 0, torque released,  if >0 to 100 increasing torque
 #
 # http://docs.ros.org/indigo/api/control_msgs/html/action/GripperCommand.html
@@ -53,7 +53,7 @@ from std_srvs.srv import Empty
 class EZGripper(object):
     def __init__(self, name):
         self.name = name
-        self._grip_max = 1.0 #maximum open position for grippers - correlates to .17 meters
+        self._grip_max = 100.0 #maximum open position for grippers - correlates to .17 meters
         self._grip_value = self._grip_max
         self._grip_min = 0.01 #if 0.0, torque mode, not position mode
         self._grip_step = self._grip_max/15 # gripper step Cross Up and Cross Down
@@ -76,7 +76,7 @@ class EZGripper(object):
     def calibrate(self):
         rospy.loginfo("ezgripper_interface: calibrate")
         try:
-            _ = self._calibrate_srv()
+            self._calibrate_srv()
         except rospy.ServiceException as exc:
             rospy.logwarn("Service did not process request: " + str(exc))
         else:
@@ -106,12 +106,12 @@ class EZGripper(object):
         rospy.loginfo("ezgripper_interface: goto position done")
 
     def close(self, max_effort): 
-        rospy.loginfo("ezgripper_interface: close")
+        rospy.loginfo("ezgripper_interface: close, effort %.1f"%max_effort)
         goal = GripperCommandGoal()
         goal.command.position = 0.0
         goal.command.max_effort = max_effort
         self._client.send_goal_and_wait(goal)
-        rospy.loginfo("ezgripper_interface: hard close done")
+        rospy.loginfo("ezgripper_interface: close done")
         self._grip_value = self._grip_min
 
     def hard_close(self):
@@ -135,19 +135,20 @@ class EZGripper(object):
     def open(self):
         rospy.loginfo("ezgripper_interface: open")
         goal = GripperCommandGoal()
-        goal.command.position = 1.0   # 100% range(0.01 to 1.0)
+        goal.command.position = 100.0   # 100% range (0..100)
         goal.command.max_effort = 100.0 # >0 to 100
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: open done")
         self._grip_value = self._grip_max
 
-    def goto_position(self, grip_position = 0.05, grip_effort = 20.0): # position in % 0.01 to 1.0, effort in % 0 to 100
+    def goto_position(self, grip_position = 5.0, grip_effort = 20.0):
+        # position in % 0 to 100 (0 is closed), effort in % 0 to 100
         rospy.loginfo("ezgripper_interface: goto position %.3f" %grip_position)
         goal = GripperCommandGoal()
         goal.command.position = grip_position   # range(0.01 to 1.0)
         goal.command.max_effort = grip_effort #  >0 to 100, if 0.0, torque is released
         self._client.send_goal_and_wait(goal)
-        rospy.loginfo("ezgripper_interface: open done")
+        rospy.loginfo("ezgripper_interface: goto position done")
         self._grip_value = grip_position
 
     def release(self):
