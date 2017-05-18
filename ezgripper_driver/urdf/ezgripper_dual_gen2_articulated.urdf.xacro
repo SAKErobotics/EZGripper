@@ -30,7 +30,8 @@
     </link>
 
     <joint name="${prefix}_ezgripper_connect" type="fixed">
-        <origin rpy="0 0 0" xyz="0.049 0.0 0.2"/>
+        <xacro:insert_block name="origin" />
+        <!-- <origin rpy="0 0 0" xyz="0.049 0.0 0.2"/> -->
         <parent link="${parent_link}"/>
         <child link="${prefix}_ezgripper_palm_link"/>
         <axis xyz="0 0 0"/>
