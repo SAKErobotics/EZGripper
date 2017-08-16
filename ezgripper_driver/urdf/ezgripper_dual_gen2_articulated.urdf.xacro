@@ -50,8 +50,7 @@
     <ezgripper_knuckle_L1_L2 prefix="${prefix}" postfix="1" reflectY="1" reflectZ="1" reflectR="-1" mimic_test="false"/>
     <ezgripper_knuckle_L1_L2 prefix="${prefix}" postfix="2" reflectY="-1" reflectZ="1" reflectR="1" mimic_test="true"/>
 
-    <ezgripper_knuckle_trans prefix="${prefix}" postfix="1"/>
-    <ezgripper_knuckle_trans prefix="${prefix}" postfix="2"/>
+    <ezgripper_knuckle_trans prefix="${prefix}" postfix="L1_L2_1"/>
 
     <gazebo_knuckle_jsp prefix="${prefix}" />
 
@@ -141,11 +140,11 @@
    <transmission name="${prefix}_ezgripper_trans_${postfix}">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="${prefix}_ezgripper_knuckle_${postfix}">
-         <hardwareInterface>PositionJointInterface</hardwareInterface>
+         <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       </joint>
       <actuator name="${prefix}_ezgripper_motor${postfix}">
          <mechanicalReduction>1</mechanicalReduction>
-         <hardwareInterface>PositionJointInterface</hardwareInterface>
+         <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       </actuator>
    </transmission>
 </macro>
@@ -153,7 +152,7 @@
 <macro name="gazebo_knuckle_jsp" params="prefix">
    <gazebo>
      <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
-       <jointName>${prefix}_ezgripper_knuckle_1,${prefix}_ezgripper_knuckle_2  </jointName>
+       <jointName>${prefix}_ezgripper_knuckle_1,${prefix}_ezgripper_knuckle_2</jointName>
      </plugin>
    </gazebo>
 </macro>
