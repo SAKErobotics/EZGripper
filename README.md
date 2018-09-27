@@ -2,13 +2,17 @@
 
 These are the EZGripper ROS drivers.  If you are not using ROS, use https://github.com/SAKErobotics/SAKErobotics
 
-## Install the EZGripper ROS Driver
+## Install the EZGripper ROS Driver (Indigo or Kinetic)
 
 1) Install the python EZGripper library https://github.com/SAKErobotics/libezgripper
 
 2) Install dependencies:
 
 	$ sudo apt-get install ros-indigo-joystick-drivers
+	
+	or 
+	
+	$ sudo apt-get install ros-kinetic-joystick-drivers
 
 3) Download code:
 
