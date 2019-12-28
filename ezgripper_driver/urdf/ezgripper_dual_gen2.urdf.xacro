@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<robot name="ezgripper" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="ezgripper" xmlns:xacro="http://ros.org/wiki/xacro">
 
 <!--macro name="ezgripper" params="*origin"-->
 
 
 
-<macro name="ezgripper_dual_gen2" params="prefix parent_link *origin">
- 
+<xacro:macro name="ezgripper_dual_gen2" params="prefix parent_link *origin">
+
 
     <!-- links -->
 
@@ -48,10 +48,10 @@
 
     <gazebo_knuckle_jsp prefix="${prefix}" />
 
-</macro>
+</xacro:macro>
 
 
-<macro name="ezgripper_finger" params="prefix postfix reflect">
+<xacro:macro name="ezgripper_finger" params="prefix postfix reflect">
     <link name="${prefix}_ezgripper_finger_${postfix}">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -70,14 +70,14 @@
         <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
       </inertial>
     </link>
-</macro>
- 
+</xacro:macro>
+
 
     <!-- joints -->
 
 
 
-<macro name="ezgripper_knuckle" params="prefix postfix reflectY reflectZ reflectR mimic_test">
+<xacro:macro name="ezgripper_knuckle" params="prefix postfix reflectY reflectZ reflectR mimic_test">
     <joint name="${prefix}_ezgripper_knuckle_${postfix}" type="revolute">
       <parent link="${prefix}_ezgripper_palm_link"/>
       <child link="${prefix}_ezgripper_finger_${postfix}"/>
@@ -88,10 +88,10 @@
            <mimic joint="ezgripper_knuckle_1"/>
       </xacro:if>
     </joint>
-</macro>
+</xacro:macro>
     <!-- transmissions for Gazebo -->
 
-<macro name="ezgripper_knuckle_trans" params="prefix postfix">
+<xacro:macro name="ezgripper_knuckle_trans" params="prefix postfix">
    <transmission name="${prefix}_ezgripper_trans_${postfix}">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="${prefix}_ezgripper_knuckle_${postfix}">
@@ -102,15 +102,15 @@
          <hardwareInterface>PositionJointInterface</hardwareInterface>
       </actuator>
    </transmission>
-</macro>
+</xacro:macro>
 
-<macro name="gazeobo_knuckle_jsp" params="prefix">
+<xacro:macro name="gazeobo_knuckle_jsp" params="prefix">
    <gazebo>
      <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
        <jointName>${prefix}_ezgripper_knuckle_1,${prefix}_ezgripper_knuckle_2  </jointName>
      </plugin>
    </gazebo>
-</macro>
+</xacro:macro>
 
 
 <gazebo>
@@ -118,5 +118,3 @@
    </plugin>
 </gazebo>
 </robot>
-
-
