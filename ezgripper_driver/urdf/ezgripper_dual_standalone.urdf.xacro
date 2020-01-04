@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<robot name="ezgripper_stand_alone" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="ezgripper_stand_alone" xmlns:xacro="http://ros.org/wiki/xacro">
 
 
-<property name="ezgripper_offset_x" value="0.049"/>
-<property name="ezgripper_offset_y" value="0.0"/>
-<property name="ezgripper_offset_z" value="0.21"/>
+<xacro:property name="ezgripper_offset_x" value="0.049"/>
+<xacro:property name="ezgripper_offset_y" value="0.0"/>
+<xacro:property name="ezgripper_offset_z" value="0.21"/>
 
 
 <xacro:include filename="$(find ezgripper_driver)/urdf/ezgripper_dual.urdf.xacro"/>
