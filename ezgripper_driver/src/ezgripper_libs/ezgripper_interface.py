@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 #####################################################################
 # Software License Agreement (BSD License)
@@ -105,7 +105,7 @@ class EZGripper(object):
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: goto position done")
 
-    def close(self, max_effort): 
+    def close(self, max_effort):
         rospy.loginfo("ezgripper_interface: close, effort %.1f"%max_effort)
         goal = GripperCommandGoal()
         goal.command.position = 0.0
