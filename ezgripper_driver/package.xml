@@ -38,6 +38,12 @@
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
+  <run_depend>joy</run_depend>
+  <run_depend>control_msgs</run_depend>
+  <run_depend>xacro</run_depend>
+  <run_depend>joint_state_publisher</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>rviz</run_depend>
 
   </export>
 </package>
