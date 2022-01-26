@@ -3,7 +3,7 @@
 A ROS package that serves as a driver to the [EZGripper module](https://sakerobotics.com/) designed by SAKE Robotics. If you are not using ROS, use https://github.com/SAKErobotics/SAKErobotics
 ## Tutorial 
 
-* Install the python [EZGripper library](https://github.com/SAKErobotics/EZGripper/tree/master):
+* Install the python EZGripper library. For kinetic and melodic use [this link](https://github.com/SAKErobotics/libezgripper/tree/master) and for noetic use [the ubuntu 20.04 branch](https://github.com/SAKErobotics/libezgripper/tree/ubuntu-20.04) .
 
 * Install all the remaining dependencies using `rosdep`, at the root of your ROS workspace:
 
