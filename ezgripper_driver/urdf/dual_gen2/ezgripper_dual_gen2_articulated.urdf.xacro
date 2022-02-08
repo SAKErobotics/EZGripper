@@ -39,25 +39,25 @@
         <limit effort="0" lower="-1.57075" upper="0.25" velocity="3.67"/>
     </joint>
 
-    <ezgripper_finger_L1 prefix="${prefix}" postfix="1" reflect="1" />
-    <ezgripper_finger_L1 prefix="${prefix}" postfix="2" reflect="1" />
+    <xacro:ezgripper_finger_L1 prefix="${prefix}" postfix="1" reflect="1" />
+    <xacro:ezgripper_finger_L1 prefix="${prefix}" postfix="2" reflect="1" />
 
-    <ezgripper_finger_L2 prefix="${prefix}" postfix="1" reflect="1" />
-    <ezgripper_finger_L2 prefix="${prefix}" postfix="2" reflect="1" />
+    <xacro:ezgripper_finger_L2 prefix="${prefix}" postfix="1" reflect="1" />
+    <xacro:ezgripper_finger_L2 prefix="${prefix}" postfix="2" reflect="1" />
 
 		<!-- Mimic Test has to set false for the first joint -->
-    <ezgripper_knuckle_palm_L1 prefix="${prefix}" postfix="1" reflectY="1" reflectZ="1" reflectR="1" mimic_test="false"/>
-    <ezgripper_knuckle_palm_L1 prefix="${prefix}" postfix="2" reflectY="-1" reflectZ="1" reflectR="-1" mimic_test="false"/>
+    <xacro:ezgripper_knuckle_palm_L1 prefix="${prefix}" postfix="1" reflectY="1" reflectZ="1" reflectR="1" mimic_test="false"/>
+    <xacro:ezgripper_knuckle_palm_L1 prefix="${prefix}" postfix="2" reflectY="-1" reflectZ="1" reflectR="-1" mimic_test="false"/>
 
-    <ezgripper_knuckle_L1_L2 prefix="${prefix}" postfix="1" reflectY="1" reflectZ="1" reflectR="-1" mimic_test="false"/>
-    <ezgripper_knuckle_L1_L2 prefix="${prefix}" postfix="2" reflectY="-1" reflectZ="1" reflectR="1" mimic_test="false"/>
+    <xacro:ezgripper_knuckle_L1_L2 prefix="${prefix}" postfix="1" reflectY="1" reflectZ="1" reflectR="-1" mimic_test="false"/>
+    <xacro:ezgripper_knuckle_L1_L2 prefix="${prefix}" postfix="2" reflectY="-1" reflectZ="1" reflectR="1" mimic_test="false"/>
 
-		<ezgripper_knuckle_palm_trans prefix="${prefix}" postfix="L1_1"/>
-		<ezgripper_knuckle_palm_trans prefix="${prefix}" postfix="L1_2"/>
-    <ezgripper_knuckle_trans prefix="${prefix}" postfix="L1_L2_1"/>
-		<ezgripper_knuckle_trans prefix="${prefix}" postfix="L1_L2_2"/>
+		<xacro:ezgripper_knuckle_palm_trans prefix="${prefix}" postfix="L1_1"/>
+		<xacro:ezgripper_knuckle_palm_trans prefix="${prefix}" postfix="L1_2"/>
+    <xacro:ezgripper_knuckle_trans prefix="${prefix}" postfix="L1_L2_1"/>
+		<xacro:ezgripper_knuckle_trans prefix="${prefix}" postfix="L1_L2_2"/>
 
-    <gazebo_knuckle_jsp prefix="${prefix}" />
+    <xacro:gazebo_knuckle_jsp prefix="${prefix}" />
 
 </xacro:macro>
 

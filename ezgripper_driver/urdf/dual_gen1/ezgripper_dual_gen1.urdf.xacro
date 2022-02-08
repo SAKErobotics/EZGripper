@@ -39,17 +39,17 @@
         <limit effort="0" lower="-1.57075" upper="0.25" velocity="3.67"/>
     </joint>
 
-    <ezgripper_finger prefix="${prefix}" postfix="1" reflect="1" />
-    <ezgripper_finger prefix="${prefix}" postfix="2" reflect="1" />
+    <xacro:ezgripper_finger prefix="${prefix}" postfix="1" reflect="1" />
+    <xacro:ezgripper_finger prefix="${prefix}" postfix="2" reflect="1" />
 
 		<!-- Mimic Test has to set false for the first joint -->
-    <ezgripper_knuckle prefix="${prefix}" postfix="1" reflectY="1" reflectZ="1" reflectR="1" mimic_test="false"/>
-    <ezgripper_knuckle prefix="${prefix}" postfix="2" reflectY="-1" reflectZ="1" reflectR="-1" mimic_test="false"/>
+    <xacro:ezgripper_knuckle prefix="${prefix}" postfix="1" reflectY="1" reflectZ="1" reflectR="1" mimic_test="false"/>
+    <xacro:ezgripper_knuckle prefix="${prefix}" postfix="2" reflectY="-1" reflectZ="1" reflectR="-1" mimic_test="false"/>
 
-    <ezgripper_knuckle_trans prefix="${prefix}" postfix="1"/>
-    <ezgripper_knuckle_trans prefix="${prefix}" postfix="2"/>
+    <xacro:ezgripper_knuckle_trans prefix="${prefix}" postfix="1"/>
+    <xacro:ezgripper_knuckle_trans prefix="${prefix}" postfix="2"/>
 
-    <gazebo_knuckle_jsp prefix="${prefix}" />
+    <xacro:gazebo_knuckle_jsp prefix="${prefix}" />
 
 </xacro:macro>
 
@@ -113,7 +113,7 @@
    </transmission>
 </xacro:macro>
 
-<xacro:macro name="gazeobo_knuckle_jsp" params="prefix">
+<xacro:macro name="gazebo_knuckle_jsp" params="prefix">
    <gazebo>
      <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
        <jointName>${prefix}_ezgripper_knuckle_1,${prefix}_ezgripper_knuckle_2 </jointName>

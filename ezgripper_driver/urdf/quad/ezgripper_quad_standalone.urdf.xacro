@@ -11,7 +11,7 @@
 
 <!-- Add the gripper -->
 <xacro:ezgripper_quad prefix="left" parent_link="base_link">
-<origin xyz="${ezgripper_offset_x} ${ezgripper_offset_y} ${ezgripper_offset_z}" rpy="-1.57 0 0"/>
+	<origin xyz="${ezgripper_offset_x} ${ezgripper_offset_y} ${ezgripper_offset_z}" rpy="-1.57 0 0"/>
 </xacro:ezgripper_quad>
 
 <link name="world"/>
