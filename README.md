@@ -2,7 +2,7 @@
 
 A ROS package that serves as a driver to the [EZGripper module](https://sakerobotics.com/) designed by SAKE Robotics. If you are not using ROS, use https://github.com/SAKErobotics/SAKErobotics
 
-## Tutorial 
+## Tutorial
 
 ### Hardware
 ---
@@ -15,14 +15,14 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
 * Clone the ROS Driver at you `src` folder:
 
-	For ROS kinetic and melodic 
+	For ROS kinetic and melodic
 
    	  git clone --branch=master https://github.com/SAKErobotics/EZGripper.git
-	
+
 	For ROS noetic
 
    	  git clone --branch=noetic-devel https://github.com/SAKErobotics/EZGripper.git
-	  
+
 
 * Build your workspace and source it:
 
@@ -60,7 +60,19 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 * Result of actuation:
 
 	<img src="https://user-images.githubusercontent.com/45683974/152959731-7b3d2ce5-a1f0-48c0-8ce1-68f767bfd9a0.gif"/>
-	
+
+### MoveIt!
+---
+
+* To launch the dual gen2 gripper in RViz only:
+
+	roslaunch ezgripper_dual_gen2_moveit_config demo.launch
+
+* To launch the dual gen2 gripper in Gazebo and RViz for control:
+
+	roslaunch ezgripper_dual_gen2_moveit_config demo_gazebo.launch
+
+
 ## Additional Configurations
 
 * Setup parameters in joy.launch file

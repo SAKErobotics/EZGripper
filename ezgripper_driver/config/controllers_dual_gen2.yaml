@@ -1,10 +1,11 @@
-arm_controller:
+ezgripper_controller:
   type: "position_controllers/JointTrajectoryController"
   joints:
     - left_ezgripper_knuckle_palm_L1_1
     - left_ezgripper_knuckle_palm_L1_2
     - left_ezgripper_knuckle_L1_L2_1
     - left_ezgripper_knuckle_L1_L2_2
+
 
 gazebo_ros_control:
   pid_gains:

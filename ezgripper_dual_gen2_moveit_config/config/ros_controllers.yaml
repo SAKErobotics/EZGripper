@@ -1,0 +1,36 @@
+ezgripper_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - left_ezgripper_knuckle_palm_L1_1
+    - left_ezgripper_knuckle_palm_L1_2
+  gains:
+    left_ezgripper_knuckle_palm_L1_1:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    left_ezgripper_knuckle_palm_L1_2:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+
+  constraints:
+    goal_time: &goal_time_constraint 0.6
+    stopped_velocity_tolerance: 1.0
+    left_ezgripper_knuckle_palm_L1_1:
+      goal: &goal_pos_constraint 0.1
+      trajectory: &trajectory_pos_constraint 0.1
+    left_ezgripper_knuckle_palm_L1_2:
+      goal: *goal_pos_constraint
+      trajectory: *trajectory_pos_constraint
+  stop_trajectory_duration: 1.0
+  state_publish_rate:  25
+  action_monitor_rate: 10
+
+gazebo_ros_control:
+  pid_gains:
+    left_ezgripper_knuckle_palm_L1_1: {p: 100.0, i: 0.01, d: 10.0}
+    left_ezgripper_knuckle_palm_L1_2: {p: 100.0, i: 0.01, d: 10.0}
+    left_ezgripper_knuckle_L1_L2_1: {p: 100.0, i: 0.01, d: 10.0}
+    left_ezgripper_knuckle_L1_L2_2: {p: 100.0, i: 0.01, d: 10.0}
