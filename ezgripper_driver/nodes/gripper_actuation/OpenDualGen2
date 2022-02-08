@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+rostopic pub /arm_controller/command trajectory_msgs/JointTrajectory \
+'{joint_names: ["left_ezgripper_knuckle_palm_L1_1","left_ezgripper_knuckle_palm_L1_2","left_ezgripper_knuckle_L1_L2_1","left_ezgripper_knuckle_L1_L2_2"], points: [{positions: [0.0,0.0,0.0,0.0], time_from_start: [1, 0]}]}' -1
+

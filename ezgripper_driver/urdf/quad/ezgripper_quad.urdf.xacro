@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <robot name="ezgripper" xmlns:xacro="http://ros.org/wiki/xacro">
 
+
 <xacro:macro name="ezgripper_quad" params="prefix parent_link *origin">
 
     <!-- links -->
@@ -9,13 +10,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="package://ezgripper_driver/meshes/visual/SAKE_Palm_Quad.stl"/>
+          <mesh filename="package://ezgripper_driver/meshes/quad/SAKE_Palm_Quad.stl"/>
         </geometry>
+				<material name="blue"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="package://ezgripper_driver/meshes/collision/SAKE_Palm_Quad.stl"/>
+          <mesh filename="package://ezgripper_driver/meshes/quad/SAKE_Palm_Quad.stl"/>
         </geometry>
       </collision>
     <inertial>
@@ -24,33 +26,35 @@
     </inertial>
     </link>
 
+		<gazebo reference="${prefix}_ezgripper_palm_link">
+      <material>Gazebo/Blue</material>
+   </gazebo>
 
     <joint name="${prefix}_ezgripper_connect" type="fixed">
-        <origin rpy="-1.57 0 0" xyz="0.049 0.0 0.2"/>
+				<xacro:insert_block name="origin" />
         <parent link="${parent_link}"/>
         <child link="${prefix}_ezgripper_palm_link"/>
         <axis xyz="0 0 0"/>
         <limit effort="0" lower="-1.57075" upper="0.25" velocity="3.67"/>
     </joint>
 
+    <xacro:ezgripper_finger prefix="${prefix}" postfix="1" reflect="1"/>
+    <xacro:ezgripper_finger prefix="${prefix}" postfix="2" reflect="1"/>
+    <xacro:ezgripper_finger prefix="${prefix}" postfix="3" reflect="1"/>
+    <xacro:ezgripper_finger prefix="${prefix}" postfix="4" reflect="1"/>
 
-    <ezgripper_finger prefix="${prefix}" postfix="1" reflect="1"/>
-    <ezgripper_finger prefix="${prefix}" postfix="2" reflect="1"/>
-    <ezgripper_finger prefix="${prefix}" postfix="3" reflect="1"/>
-    <ezgripper_finger prefix="${prefix}" postfix="4" reflect="1"/>
+		<!-- Mimic Test has to set false for the first joint -->
+    <xacro:ezgripper_knuckle prefix="${prefix}" postfix="1" reflectY="1" reflectZ="1" reflectR="1" mimic_test="false"/>
+    <xacro:ezgripper_knuckle prefix="${prefix}" postfix="2" reflectY="-1" reflectZ="1" reflectR="-1" mimic_test="false"/>
+    <xacro:ezgripper_knuckle prefix="${prefix}" postfix="3" reflectY="1" reflectZ="-1" reflectR="1" mimic_test="false"/>
+    <xacro:ezgripper_knuckle prefix="${prefix}" postfix="4" reflectY="-1" reflectZ="-1" reflectR="-1" mimic_test="false"/>
 
+    <xacro:ezgripper_knuckle_trans prefix="${prefix}" postfix="1"/>
+    <xacro:ezgripper_knuckle_trans prefix="${prefix}" postfix="2"/>
+    <xacro:ezgripper_knuckle_trans prefix="${prefix}" postfix="3"/>
+    <xacro:ezgripper_knuckle_trans prefix="${prefix}" postfix="4"/>
 
-    <ezgripper_knuckle prefix="${prefix}" postfix="1" reflectY="1" reflectZ="1" reflectR="1" mimic_test="false"/>
-    <ezgripper_knuckle prefix="${prefix}" postfix="2" reflectY="-1" reflectZ="1" reflectR="-1" mimic_test="true"/>
-    <ezgripper_knuckle prefix="${prefix}" postfix="3" reflectY="1" reflectZ="-1" reflectR="1" mimic_test="true"/>
-    <ezgripper_knuckle prefix="${prefix}" postfix="4" reflectY="-1" reflectZ="-1" reflectR="-1" mimic_test="true"/>
-
-    <ezgripper_knuckle_trans prefix="${prefix}" postfix="1"/>
-    <ezgripper_knuckle_trans prefix="${prefix}" postfix="2"/>
-    <ezgripper_knuckle_trans prefix="${prefix}" postfix="3"/>
-    <ezgripper_knuckle_trans prefix="${prefix}" postfix="4"/>
-
-    <gazebo_knuckle_jsp prefix="${prefix}" />
+    <xacro:gazebo_knuckle_jsp prefix="${prefix}" />
 
 
 </xacro:macro>
@@ -61,13 +65,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="package://ezgripper_driver/meshes/visual/SAKE_Finger.stl"/>
+          <mesh filename="package://ezgripper_driver/meshes/quad/SAKE_Finger.stl"/>
         </geometry>
+				<material name="grey"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="package://ezgripper_driver/meshes/collision/SAKE_Finger.stl"/>
+          <mesh filename="package://ezgripper_driver/meshes/quad/SAKE_Finger.stl"/>
         </geometry>
       </collision>
       <inertial>
@@ -75,13 +80,15 @@
         <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy=".01" iyz="0.0" izz="0.01"/>
       </inertial>
     </link>
+
+		<gazebo reference="${prefix}_ezgripper_finger_${postfix}">
+      <material>Gazebo/Grey</material>
+   </gazebo>
+
 </xacro:macro>
 
 
-    <!-- joints -->
-
-
-
+<!-- joints -->
 <xacro:macro name="ezgripper_knuckle" params="prefix postfix reflectY reflectZ reflectR mimic_test">
     <joint name="${prefix}_ezgripper_knuckle_${postfix}" type="revolute">
       <parent link="${prefix}_ezgripper_palm_link"/>
@@ -101,11 +108,11 @@
    <transmission name="${prefix}_ezgripper_trans_${postfix}">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="${prefix}_ezgripper_knuckle_${postfix}">
-         <hardwareInterface>PositionJointInterface</hardwareInterface>
+         <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       </joint>
       <actuator name="${prefix}_ezgripper_motor${postfix}">
          <mechanicalReduction>1</mechanicalReduction>
-         <hardwareInterface>PositionJointInterface</hardwareInterface>
+         <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       </actuator>
    </transmission>
 </xacro:macro>
@@ -120,7 +127,7 @@
 
 <gazebo>
    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-
+		<legacyModeNS>true</legacyModeNS>
    </plugin>
 </gazebo>
 </robot>
