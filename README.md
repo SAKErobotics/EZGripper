@@ -1,7 +1,11 @@
 # EZGripper
 
 A ROS package that serves as a driver to the [EZGripper module](https://sakerobotics.com/) designed by SAKE Robotics. If you are not using ROS, use https://github.com/SAKErobotics/SAKErobotics
-## Tutorial 
+
+## Tutorial
+
+### Hardware
+---
 
 * Install the python EZGripper library. For kinetic and melodic use [this link](https://github.com/SAKErobotics/libezgripper/tree/master) and for noetic use [the ubuntu 20.04 branch](https://github.com/SAKErobotics/libezgripper/tree/ubuntu-20.04) .
 
@@ -11,14 +15,13 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
 * Clone the ROS Driver at you `src` folder:
 
-	For ROS kinetic and melodic 
+	For ROS kinetic and melodic
 
    	  git clone --branch=master https://github.com/SAKErobotics/EZGripper.git
-	
+
 	For ROS noetic
 
    	  git clone --branch=noetic-devel https://github.com/SAKErobotics/EZGripper.git
-	  
 
 * Build your workspace and source it:
 
@@ -28,6 +31,34 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
       roslaunch ezgripper_driver joy.launch
 
+### Software
+---
+
+* Launch your required `$GRIPPER_MODULE` in RViz (`dual_gen1`, `dual_gen2`, `quad`):
+
+	  roslaunch ezgripper_driver display.launch gripper_module:=$GRIPPER_MODULE
+
+* Similarly to launch in Gazebo:
+
+	  roslaunch ezgripper_driver gazebo.launch gripper_module:=$GRIPPER_MODULE
+
+* To actuate the gripper into its respective open/close configurations in Gazebo:
+
+	  # dual_gen1
+	  rosrun ezgripper_driver OpenDualGen1
+	  rosrun ezgripper_driver CloseDualGen1
+
+	  # dual_gen2
+	  rosrun ezgripper_driver OpenDualGen2
+	  rosrun ezgripper_driver CloseDualGen2
+
+	  # quad
+	  rosrun ezgripper_driver OpenQuad
+	  rosrun ezgripper_driver CloseQuad
+
+* Result of actuation:
+
+	<img src="https://user-images.githubusercontent.com/45683974/152959731-7b3d2ce5-a1f0-48c0-8ce1-68f767bfd9a0.gif"/>
 
 ## Additional Configurations
 
@@ -60,7 +91,6 @@ A sample client ([nodes/client.py](ezgripper_driver/nodes/client.py)) is include
 ## URDF Models
 
 Access the URDF [README](https://github.com/SAKErobotics/EZGripper/tree/master/ezgripper_driver/urdf) for additional information.
-
 
 ## TroubleShooting
 
