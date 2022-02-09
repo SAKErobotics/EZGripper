@@ -29,6 +29,12 @@
         <origin rpy="0 0 0" xyz="0 0 0.21"/>
         <material name="black"/>
     </visual>
+		<collision>
+			<geometry>
+					<cylinder length="0.42" radius="0.02"/>
+			 </geometry>
+			 <origin rpy="0 0 0" xyz="0 0 0.21"/>
+		</collision>
 </link>
 
 <gazebo reference="base_link">
