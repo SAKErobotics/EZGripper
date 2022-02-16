@@ -3,7 +3,6 @@ controller_list:
     type: $(arg fake_execution_type)
     joints:
       - left_ezgripper_knuckle_palm_L1_1
-      - left_ezgripper_knuckle_palm_L1_2
 initial:  # Define initial robot poses per group
   - group: ezgripper_group
     pose: open

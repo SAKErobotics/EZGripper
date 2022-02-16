@@ -110,7 +110,7 @@ def send_diags():
 
 # Main Program
 
-rospy.init_node('ezgripper')
+rospy.init_node('ezgripper_action_server_node')
 rospy.loginfo("Started")
 
 port_name = rospy.get_param('~port', '/dev/ttyUSB0')

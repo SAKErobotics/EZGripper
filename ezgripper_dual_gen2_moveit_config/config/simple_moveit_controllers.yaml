@@ -1,8 +1,7 @@
 controller_list:
   - name: ezgripper_controller
-    action_ns: follow_joint_trajectory
-    type: FollowJointTrajectory
+    action_ns: gripper_action
+    type: GripperCommand
     default: True
     joints:
       - left_ezgripper_knuckle_palm_L1_1
-      - left_ezgripper_knuckle_palm_L1_2

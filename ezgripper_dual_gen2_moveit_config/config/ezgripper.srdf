@@ -22,6 +22,10 @@
         <joint name="left_ezgripper_knuckle_palm_L1_1" value="1.924"/>
         <joint name="left_ezgripper_knuckle_palm_L1_2" value="1.924"/>
     </group_state>
+    <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
+    <end_effector name="ezgripper_end_effector" parent_link="left_ezgripper_palm_link" group="ezgripper_group"/>
+    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
+    <virtual_joint name="virtual_joint" type="fixed" parent_frame="base_link" child_link="world"/>
     <!--PASSIVE JOINT: Purpose: this element is used to mark joints that are not actuated-->
     <passive_joint name="left_ezgripper_knuckle_L1_L2_2"/>
     <passive_joint name="left_ezgripper_knuckle_L1_L2_1"/>

@@ -72,6 +72,10 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
 	roslaunch ezgripper_dual_gen2_moveit_config demo_gazebo.launch
 
+* To control the dual_gen2 gripper hardware through MoveIt!:
+
+	roslaunch ezgripper_dual_gen2_moveit_config moveit_planning_execution.launch sim:=false
+
 
 ## Additional Configurations
 
