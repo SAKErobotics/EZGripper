@@ -130,7 +130,7 @@
       <child link="${prefix}_ezgripper_finger_L1_${postfix}"/>
       <origin xyz="0.072569 ${reflectY*0.03} 0" rpy="${-1.5708 * reflectR} 0 ${1.57075 * reflectR}"/>
       <axis xyz="0 1 0"/>
-      <limit lower="0" upper="1.94" effort="1" velocity="3.67"/>
+      <limit lower="0" upper="1.94" effort="100" velocity="3.67"/>
       <xacro:if value="${mimic_test}">
            <mimic joint="${prefix}_ezgripper_knuckle_palm_L1_1"/>
       </xacro:if>
@@ -144,7 +144,7 @@
       <origin xyz="0.052 0 0" rpy="0 0 0"/>
       <!-- origin xyz="0.06 0 0" rpy="${3.14159 * reflectR} 0 0"/-->
       <axis xyz="0 1 0"/>
-      <limit lower="0" upper="1.94" effort="1" velocity="3.67"/>
+      <limit lower="0" upper="1.94" effort="100" velocity="3.67"/>
       <xacro:if value="${mimic_test}">
            <mimic joint="${prefix}_ezgripper_knuckle_L1_L2_1"/>
       </xacro:if>
