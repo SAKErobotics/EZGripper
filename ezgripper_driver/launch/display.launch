@@ -2,9 +2,9 @@
 <launch>
 
 	<!-- Configure the ezgripper module -->
-	<arg name="gripper_module" default="dual_gen2" doc="Gripper module dictonary - {dual_gen1, dual_gen2, quad}" />
+	<arg name="ezgripper_module" default="dual_gen2" doc="Gripper module dictonary - {dual_gen1, dual_gen2, quad}" />
 
-  <arg name="model" default="$(find ezgripper_driver)/urdf/$(arg gripper_module)/ezgripper_$(arg gripper_module)_standalone.urdf.xacro"/>
+  <arg name="model" default="$(find ezgripper_driver)/urdf/$(arg ezgripper_module)/ezgripper_$(arg ezgripper_module)_standalone.urdf.xacro"/>
   <arg name="gui" default="true" />
   <arg name="rvizconfig" default="$(find ezgripper_driver)/rviz/urdf.rviz" />
 

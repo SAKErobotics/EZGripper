@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+ezgripper_module=$(echo $1| cut -c 19-27)
+max_effort=1.0
+
+echo $ezgripper_module
+
+if [ $ezgripper_module == 'dual_gen1' ]
+then
+close_position=-0.27
+elif [ $ezgripper_module == 'dual_gen2' ]
+then
+close_position=1.92
+elif [ $ezgripper_module == 'quad' ]
+then
+close_position=-0.28
+else
+echo No such ezgripper module found.
+exit 1
+fi
+
+rostopic pub /ezgripper_controller/gripper_cmd/goal \
+  control_msgs/GripperCommandActionGoal \
+"header:
+  seq: 0
+  stamp:
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+goal_id:
+  stamp:
+    secs: 0
+    nsecs: 0
+  id: ''
+goal:
+  command:
+    position: $close_position
+    max_effort: $max_effort" # -1 is to publish and latch for 3.0s

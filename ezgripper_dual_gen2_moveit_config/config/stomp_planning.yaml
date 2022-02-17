@@ -1,5 +1,5 @@
-stomp/ezgripper_group:
-  group_name: ezgripper_group
+stomp/ezgripper_planning_group:
+  group_name: ezgripper_planning_group
   optimization:
     num_timesteps: 60
     num_iterations: 40

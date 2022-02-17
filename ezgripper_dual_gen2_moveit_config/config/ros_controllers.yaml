@@ -1,14 +1,8 @@
-ezgripper:
-  ezgripper_controller:
-    type: position_controllers/GripperActionController
-    joint: left_ezgripper_knuckle_palm_L1_1
-    action_monitor_rate: 20
-    goal_tolerance: 0.002
-    max_effort: 100.0
-    stall_velocity_threshold: 0.001
-    stall_timeout: 1.0
+ezgripper_controller:
+  type: position_controllers/GripperActionController
+  joint: left_ezgripper_knuckle_palm_L1_1
+  max_effort: 1.0
 
 gazebo_ros_control:
   pid_gains:
     left_ezgripper_knuckle_palm_L1_1: {p: 100.0, i: 0.01, d: 10.0}
-    left_ezgripper_knuckle_L1_L2_1: {p: 100.0, i: 0.01, d: 10.0}

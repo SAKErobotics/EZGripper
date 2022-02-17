@@ -35,27 +35,21 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 ### Software
 ---
 
-* Launch your required `$GRIPPER_MODULE` in RViz (`dual_gen1`, `dual_gen2`, `quad`):
+* Launch your required `$EZGRIPPER_MODULE` in RViz (`dual_gen1`, `dual_gen2`, `quad`):
 
-	  roslaunch ezgripper_driver display.launch gripper_module:=$GRIPPER_MODULE
+	  roslaunch ezgripper_driver display.launch ezgripper_module:=$EZGRIPPER_MODULE
 
 * Similarly to launch in Gazebo:
 
-	  roslaunch ezgripper_driver gazebo.launch gripper_module:=$GRIPPER_MODULE
+	  roslaunch ezgripper_driver gazebo.launch ezgripper_module:=$EZGRIPPER_MODULE
 
 * To actuate the gripper into its respective open/close configurations in Gazebo:
 
-	  # dual_gen1
-	  rosrun ezgripper_driver OpenDualGen1
-	  rosrun ezgripper_driver CloseDualGen1
+	  # Open Gripper
+	  rosrun ezgripper_driver open_gripper ezgripper_module:=$EZGRIPPER_MODULE
 
-	  # dual_gen2
-	  rosrun ezgripper_driver OpenDualGen2
-	  rosrun ezgripper_driver CloseDualGen2
-
-	  # quad
-	  rosrun ezgripper_driver OpenQuad
-	  rosrun ezgripper_driver CloseQuad
+	  # Close Gripper
+	  rosrun ezgripper_driver close_gripper ezgripper_module:=$EZGRIPPER_MODULE
 
 * Result of actuation:
 
@@ -64,18 +58,17 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 ### MoveIt!
 ---
 
-* To launch the dual gen2 gripper in RViz only:
+* To launch the ezgripper in RViz only:
 
-	roslaunch ezgripper_dual_gen2_moveit_config demo.launch
+	  roslaunch ezgripper_$EZGRIPPER_MODULE_moveit_config demo.launch
 
-* To launch the dual gen2 gripper in Gazebo and RViz for control:
+* To launch the ezgripper in Gazebo and RViz for control:
 
-	roslaunch ezgripper_dual_gen2_moveit_config demo_gazebo.launch
+	  roslaunch ezgripper_$EZGRIPPER_MODULE_moveit_config demo_gazebo.launch
 
-* To control the dual_gen2 gripper hardware through MoveIt!:
+* To control the ezgripper hardware through MoveIt!:
 
-	roslaunch ezgripper_dual_gen2_moveit_config moveit_planning_execution.launch sim:=false
-
+	  roslaunch ezgripper_$EZGRIPPER_MODULE_moveit_config ezgripper_$EZGRIPPER_MODULE_moveit_planning_execution.launch
 
 ## Additional Configurations
 
