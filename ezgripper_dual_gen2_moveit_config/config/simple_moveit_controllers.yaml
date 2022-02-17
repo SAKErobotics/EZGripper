@@ -2,6 +2,6 @@ controller_list:
   - name: ezgripper_action_server_node/ezgripper_controller
     action_ns: gripper_cmd
     type: GripperCommand
-    default: True
+    max_effort: 100.0
     joints:
       - left_ezgripper_knuckle_palm_L1_1
