@@ -101,7 +101,7 @@ class GripperAction:
             rospy.loginfo("Go to position: done")
 
         # Feedback
-        self._feedback.position = self.gripper.get_position(use_percentages = False)
+        self._feedback.position = current_gripper_position
         self._as.publish_feedback(self._feedback)
 
         # Preemption Check
@@ -167,6 +167,8 @@ connection = create_connection(port_name, baud)
 all_servos = []
 references = []
 grippers = []
+gripper = None
+current_gripper_position = 0.0
 
 for gripper_name, servo_ids in gripper_params.items():
 
@@ -189,6 +191,9 @@ r = rospy.Rate(20) # hz
 diags_last_sent = 0
 
 while not rospy.is_shutdown():
+
+    current_gripper_position = gripper.get_position(use_percentages = False)
+    print("Feedback = {}".format(current_gripper_position))
 
     now = rospy.get_time()
     if now - diags_last_sent > 1.0:
