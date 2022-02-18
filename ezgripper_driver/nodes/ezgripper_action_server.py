@@ -38,7 +38,7 @@
 
 import rospy
 from std_srvs.srv import Empty, EmptyResponse
-from libezgripper import create_connection, Gripper
+from libezgripper import create_connection, Gripper, RobotisServo
 import actionlib
 from control_msgs.msg import GripperCommandAction, GripperCommandResult
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
@@ -124,6 +124,7 @@ connection = create_connection(port_name, baud)
 all_servos = []
 references = []
 grippers = []
+gripper = None
 
 for gripper_name, servo_ids in gripper_params.items():
 
@@ -138,11 +139,14 @@ for gripper_name, servo_ids in gripper_params.items():
 
     grippers.append(gripper)
 
+
 # Main Loop
 
 r = rospy.Rate(20) # hz
 diags_last_sent = 0
 while not rospy.is_shutdown():
+
+
     now = rospy.get_time()
     if now - diags_last_sent > 1.0:
         try:
@@ -157,6 +161,9 @@ while not rospy.is_shutdown():
         except Exception as e:
             rospy.logerr("Exception while checking overload: %s"%e)
             servo.flushAll()
+
+    print("Gripper Position - {}".format(gripper.get_position()))
+    print("Gripper Positions - {}".format(gripper.get_positions()))
 
     r.sleep()
 
