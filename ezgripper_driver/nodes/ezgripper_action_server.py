@@ -110,12 +110,12 @@ def send_diags():
 
 # Main Program
 
-rospy.init_node('ezgripper_action_server_node')
+rospy.init_node('ezgripper_controller')
 rospy.loginfo("Started")
 
 port_name = rospy.get_param('~port', '/dev/ttyUSB0')
 baud = int(rospy.get_param('~baud', '57600'))
-gripper_params = rospy.get_param('~grippers', {'ezgripper_controller/gripper_cmd': [1]})
+gripper_params = rospy.get_param('~grippers', {'gripper_cmd': [1]})
 
 diagnostics_pub = rospy.Publisher('/diagnostics', DiagnosticArray, queue_size=1)
 

@@ -129,7 +129,7 @@
 	<gazebo>
 
 		<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-			<!-- <robotNamespace>ezgripper_quad</robotNamespace> -->
+			<robotNamespace>ezgripper_quad</robotNamespace>
 			<legacyModeNS>true</legacyModeNS>
 		</plugin>
 

@@ -11,7 +11,7 @@
   <rosparam file="$(find ezgripper_driver)/config/controllers_$(arg ezgripper_module).yaml" command="load"/>
 
   <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-		output="screen" args="ezgripper_controller "/>
+		ns="/ezgripper_$(arg ezgripper_module)" output="screen" args="ezgripper_controller"/>
 
   <!-- Start Gazebo with an empty world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch"/>

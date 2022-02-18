@@ -1,5 +1,5 @@
 controller_list:
-  - name: ezgripper_action_server_node/ezgripper_controller
+  - name: ezgripper_dual_gen2/ezgripper_controller
     action_ns: gripper_cmd
     type: GripperCommand
     max_effort: 1.0

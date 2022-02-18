@@ -3,8 +3,6 @@
 ezgripper_module=$(echo $1| cut -c 19-27)
 max_effort=1.0
 
-echo $ezgripper_module
-
 if [ $ezgripper_module == 'dual_gen1' ]
 then
 open_position=1.57
@@ -19,7 +17,7 @@ echo No such ezgripper module found.
 exit 1
 fi
 
-rostopic pub /ezgripper_controller/gripper_cmd/goal \
+rostopic pub /ezgripper_$ezgripper_module/ezgripper_controller/gripper_cmd/goal \
   control_msgs/GripperCommandActionGoal \
 "header:
   seq: 0

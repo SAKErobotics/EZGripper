@@ -123,3 +123,9 @@ Access the URDF [README](https://github.com/SAKErobotics/EZGripper/tree/master/e
 
 	  sudo adduser <user> dialout
 	  reboot
+
+### ROS Controller Issues:
+
+* Check whether the `joint_state_controller` and the `ezgripper_controller` modules are loaded:
+
+	  rosservice call /ezgripper_$EZGRIPPER_MODULE/controller_manager/list_controllers
