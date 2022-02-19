@@ -13,11 +13,6 @@
   <!-- publish the robot state (tf transforms) -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
-	<!-- Publish joint states -->
-	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-		<rosparam param="source_list">[ezgripper_dual_gen2/joint_states]</rosparam>
-	</node>
-
   <include file="$(find ezgripper_dual_gen2_moveit_config)/launch/move_group.launch">
     <arg name="publish_monitored_planning_scene" value="true" />
 		<arg name="moveit_controller_manager" value="simple" /> <!-- ros_control does not support Gripper Command -->

@@ -129,3 +129,9 @@ Access the URDF [README](https://github.com/SAKErobotics/EZGripper/tree/master/e
 * Check whether the `joint_state_controller` and the `ezgripper_controller` modules are loaded:
 
 	  rosservice call /ezgripper_$EZGRIPPER_MODULE/controller_manager/list_controllers
+
+### ROS Diagnostics
+
+* View the diagnostics of the ezgripper_module:
+
+	  rosrun rqt_runtime_monitor rqt_runtime_monitor

@@ -32,7 +32,7 @@
 
 	<!-- For simple controllers -->
 	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-		<rosparam param="source_list">[ezgripper_dual_gen2/joint_states]</rosparam>
+		<remap from="joint_states" to="/ezgripper_dual_gen2/joint_states" />
 	</node>
 
   <!-- Load ROS controllers -->

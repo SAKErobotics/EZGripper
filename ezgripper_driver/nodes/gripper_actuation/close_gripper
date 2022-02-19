@@ -19,18 +19,4 @@ fi
 
 rostopic pub /ezgripper_$ezgripper_module/ezgripper_controller/gripper_cmd/goal \
   control_msgs/GripperCommandActionGoal \
-"header:
-  seq: 0
-  stamp:
-    secs: 0
-    nsecs: 0
-  frame_id: ''
-goal_id:
-  stamp:
-    secs: 0
-    nsecs: 0
-  id: ''
-goal:
-  command:
-    position: $close_position
-    max_effort: $max_effort" -1 # -1 is to publish and latch for 3.0s
+    "goal: {command: {position: $close_position, max_effort: $max_effort}}" -1 # -1 is to publish and latch for 3.0s

@@ -40,11 +40,14 @@ EZGripper Action Server Module
 #
 
 from functools import partial
+from math import fabs
 import rospy
 from std_srvs.srv import Empty, EmptyResponse
 import actionlib
 from control_msgs.msg import GripperCommandAction, GripperCommandFeedback, GripperCommandResult
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
+from std_msgs.msg import Header
+from sensor_msgs.msg import JointState
 from libezgripper import create_connection, Gripper
 
 
@@ -58,6 +61,10 @@ def calibrate_srv(gripper, msg):
     rospy.loginfo("Calibrate service: request completed")
     return EmptyResponse()
 
+def now_from_start(start):
+    return rospy.get_time() - start
+
+
 class GripperAction:
     """
     GripperCommand Action Server to send Feedback to MoveIt! and
@@ -70,6 +77,8 @@ class GripperAction:
     def __init__(self, name, gripper):
 
         self.gripper = gripper
+        self._timeout = 3.0
+        self._positional_buffer = 0.05
 
         # Action server
         self._action_name = name
@@ -77,52 +86,87 @@ class GripperAction:
             self._action_name, GripperCommandAction, self.execute_cb, False)
         self._as.start()
 
-    def execute_cb(self, goal):
+    def _command_gripper(self, position, effort):
         """
-        Action server callback to execute a goal
+        Actuate gripper to position and effort
         """
-
-        # helper variables
-        success = True
 
         # Debug string
         rospy.loginfo("Execute goal: position=%.1f, max_effort=%.1f"%
-                      (goal.command.position, goal.command.max_effort))
+                      (position, effort))
 
         # Actuate Gripper
-        if goal.command.max_effort == 0.0:
+        if effort == 0.0:
             rospy.loginfo("Release torque: start")
             self.gripper.release()
             rospy.loginfo("Release torque: done")
         else:
             rospy.loginfo("Go to position: start")
-            self.gripper.goto_position(goal.command.position, \
-                goal.command.max_effort, use_percentages = False)
+            self.gripper.goto_position(position, effort, use_percentages = False)
             rospy.loginfo("Go to position: done")
 
-        # Feedback
-        self._feedback.position = current_gripper_position
+    def _check_state(self, position):
+        """
+        Check if gripper has reached desired position
+        """
+        return fabs(self.gripper.get_position( \
+            use_percentages = False) - position) < self._positional_buffer
+
+    def _publish_feedback_and_update_result(self, position, effort):
+        """
+        Publish Gripper Feedback and Update Result
+        """
+        self._feedback.position = self.gripper.get_position(use_percentages = False)
+        self._feedback.effort = effort
+        self._feedback.reached_goal = self._check_state(position)
+        self._result = self._feedback
         self._as.publish_feedback(self._feedback)
 
-        # Preemption Check
-        if self._as.is_preempt_requested():
-            rospy.loginfo('%s: Preempted' % self._action_name)
-            self._as.set_preempted()
-            success = False
 
-        # Publish result
-        if success:
-            self._result.position = goal.command.position
-            self._result.effort = goal.command.max_effort
-            self._result.stalled = False
-            self._result.reached_goal = True
-            self._as.set_succeeded(self._result)
+    def execute_cb(self, goal):
+        """
+        Action server callback to execute a goal
+        """
+
+        position = goal.command.position
+        effort = goal.command.max_effort
+        global max_effort
+        max_effort = effort
+        control_rate = rospy.Rate(20)
+        start_time = rospy.get_time()
+
+        # Iterate until goal is reached or timeout
+        while not rospy.is_shutdown() \
+            and now_from_start(start_time) < self._timeout:
+
+            # Publish Feedback and Update Result
+            self._publish_feedback_and_update_result(position, effort)
+
+            # Command gripper
+            self._command_gripper(position, effort)
+
+            # Check if goal is reached
+            if self._check_state(position):
+                self._as.set_succeeded(self._result)
+                rospy.loginfo("Gripper has reached desired position")
+                return
+
+            # Preemption Check
+            if self._as.is_preempt_requested():
+                rospy.loginfo('%s: Preempted' % self._action_name)
+                self._as.set_preempted()
+                self._as.set_aborted(self._result)
+                return
+
+            control_rate.sleep()
+
+        rospy.loginfo("Gripper has grasped an object")
 
 def send_diags():
     """
     Send Diagnostic Data
     """
-    # See diagnostics with: rosrun rqt_runtime_monitor rqt_runtime_monitor
+
     msg = DiagnosticArray()
     msg.status = []
     msg.header.stamp = rospy.Time.now()
@@ -153,6 +197,16 @@ def send_diags():
 
 # Main Program
 
+all_servos = []
+references = []
+grippers = []
+gripper = None
+current_gripper_position = 0.0
+rate = rospy.Rate(20) # hz
+diags_last_sent = 0
+MAX_VELOCITY = 3.67
+max_effort = 0.0
+
 rospy.init_node('ezgripper_controller')
 rospy.loginfo("Started")
 
@@ -161,14 +215,10 @@ baud = int(rospy.get_param('~baud', '57600'))
 gripper_params = rospy.get_param('~grippers', {'gripper_cmd': [1]})
 
 diagnostics_pub = rospy.Publisher('/diagnostics', DiagnosticArray, queue_size=1)
+joint_pub = rospy.Publisher('joint_states', JointState, queue_size=1)
 
 connection = create_connection(port_name, baud)
 
-all_servos = []
-references = []
-grippers = []
-gripper = None
-current_gripper_position = 0.0
 
 for gripper_name, servo_ids in gripper_params.items():
 
@@ -187,13 +237,20 @@ for gripper_name, servo_ids in gripper_params.items():
 
 # Main Loop
 
-r = rospy.Rate(20) # hz
-diags_last_sent = 0
-
 while not rospy.is_shutdown():
 
     current_gripper_position = gripper.get_position(use_percentages = False)
     print("Feedback = {}".format(current_gripper_position))
+
+    # Publish Joint States
+    jointState = JointState()
+    jointState.header = Header()
+    jointState.header.stamp = rospy.Time.now()
+    jointState.name = ['left_ezgripper_knuckle_palm_L1_1']
+    jointState.position = [current_gripper_position]
+    jointState.velocity = [MAX_VELOCITY]
+    jointState.effort = [max_effort]
+    joint_pub.publish(jointState)
 
     now = rospy.get_time()
     if now - diags_last_sent > 1.0:
@@ -210,6 +267,6 @@ while not rospy.is_shutdown():
             rospy.logerr("Exception while checking overload: %s"%error)
             servo.flushAll()
 
-    r.sleep()
+    rate.sleep()
 
 rospy.loginfo("Exiting")
