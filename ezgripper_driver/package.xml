@@ -33,17 +33,30 @@
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
 
-  <run_depend>python-serial</run_depend>
+	<!-- Python Dependencies -->
+  <run_depend>python3-serial</run_depend>
+
+	<!-- ROS Dependencies -->
+  <run_depend>rviz</run_depend>
+  <run_depend>xacro</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>joint_state_publisher</run_depend>
+	<run_depend>joint_state_publisher_gui</run_depend>
+	<run_depend>joint_state_controller</run_depend>
+	<run_depend>joint_trajectory_controller</run_depend>
+  <run_depend>joy</run_depend>
+  <run_depend>control_msgs</run_depend>
+  <run_depend>gazebo_ros</run_depend>
+	<run_depend>gazebo_ros_control</run_depend>
+  <run_depend>moveit</run_depend>
+  <run_depend>controller_manager</run_depend>
+  <run_depend>ros_controllers</run_depend>
+
+	<!-- Gazebo mimic dependencies -->
+	<run_depend>roboticsgroup_upatras_gazebo_plugins</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
-  <run_depend>joy</run_depend>
-  <run_depend>control_msgs</run_depend>
-  <run_depend>xacro</run_depend>
-  <run_depend>joint_state_publisher</run_depend>
-  <run_depend>robot_state_publisher</run_depend>
-  <run_depend>rviz</run_depend>
-
   </export>
 </package>

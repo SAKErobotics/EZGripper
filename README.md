@@ -1,9 +1,17 @@
 # EZGripper
 
 A ROS package that serves as a driver to the [EZGripper module](https://sakerobotics.com/) designed by SAKE Robotics. If you are not using ROS, use https://github.com/SAKErobotics/SAKErobotics
-## Tutorial 
 
-* Install the python EZGripper library. For kinetic and melodic use [this link](https://github.com/SAKErobotics/libezgripper/tree/master) and for noetic use [the ubuntu 20.04 branch](https://github.com/SAKErobotics/libezgripper/tree/ubuntu-20.04) .
+## Tutorial
+
+### Hardware
+---
+
+* Install the python EZGripper library. For kinetic and melodic use [this link](https://github.com/SAKErobotics/libezgripper/tree/master) and for noetic use [the ubuntu 20.04 branch](https://github.com/SAKErobotics/libezgripper/tree/ubuntu-20.04).
+
+* Install the `upatras_gazebo_plugins` to enable Gazebo to mimic the EZGripper joints:
+
+	  git clone https://github.com/roboticsgroup/roboticsgroup_upatras_gazebo_plugins.git
 
 * Install all the remaining dependencies using `rosdep`, at the root of your ROS workspace:
 
@@ -11,14 +19,14 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
 * Clone the ROS Driver at you `src` folder:
 
-	For ROS kinetic and melodic 
+	For ROS kinetic and melodic
 
    	  git clone --branch=master https://github.com/SAKErobotics/EZGripper.git
-	
+
 	For ROS noetic
 
    	  git clone --branch=noetic-devel https://github.com/SAKErobotics/EZGripper.git
-	  
+
 
 * Build your workspace and source it:
 
@@ -28,6 +36,47 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
       roslaunch ezgripper_driver joy.launch
 
+### Software
+---
+
+* Set the bash variable according to your gripper module - (`dual_gen1`, `dual_gen2`, `quad`):
+
+	  export ezgripper_module=<your_gripper_module>
+
+* Launch the gripper module in RViz :
+
+	  roslaunch ezgripper_driver display.launch ezgripper_module:=${ezgripper_module}
+
+* Similarly to launch in Gazebo:
+
+	  roslaunch ezgripper_driver gazebo.launch ezgripper_module:=${ezgripper_module}
+
+* To actuate the gripper into its respective open/close configurations in Gazebo:
+
+	  # Open Gripper
+	  rosrun ezgripper_driver open_gripper ezgripper_module:=${ezgripper_module}
+
+	  # Close Gripper
+	  rosrun ezgripper_driver close_gripper ezgripper_module:=${ezgripper_module}
+
+* Result of actuation:
+
+	<img src="https://user-images.githubusercontent.com/45683974/152959731-7b3d2ce5-a1f0-48c0-8ce1-68f767bfd9a0.gif"/>
+
+### MoveIt!
+---
+
+* To launch the ezgripper in RViz only:
+
+	  roslaunch ezgripper_${ezgripper_module}_moveit_config demo.launch
+
+* To launch the ezgripper in Gazebo and RViz for control:
+
+	  roslaunch ezgripper_${ezgripper_module}_moveit_config demo_gazebo.launch
+
+* To control the ezgripper hardware through MoveIt!:
+
+	  roslaunch ezgripper_${ezgripper_module}_moveit_config ezgripper_${ezgripper_module}_moveit_planning_execution.launch
 
 ## Additional Configurations
 
@@ -53,16 +102,19 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 	  # joy_tcp.launch controls a single servo via TCP instead of USB
 
 ## Action API
+---
 
-The driver provides an implementation of the SimpleActionServer, that takes in [control_msgs/GripperCommand](http://docs.ros.org/indigo/api/control_msgs/html/action/GripperCommand.html) actions.<br/>
-A sample client ([nodes/client.py](ezgripper_driver/nodes/client.py)) is included that provides joystick control using the action API.
+* The driver provides an implementation of the SimpleActionServer, that takes in [control_msgs/GripperCommand](http://docs.ros.org/indigo/api/control_msgs/html/action/GripperCommand.html) actions.<br/>
+* A sample client ([nodes/client.py](ezgripper_driver/nodes/client.py)) is included that provides joystick control using the action API.
 
 ## URDF Models
+---
 
-Access the URDF [README](https://github.com/SAKErobotics/EZGripper/tree/master/ezgripper_driver/urdf) for additional information.
+Access the URDF [models](https://github.com/SAKErobotics/EZGripper/tree/master/ezgripper_driver/urdf) for additional information.
 
 
 ## TroubleShooting
+---
 
 ### Serial connection issues:
 
@@ -82,3 +134,15 @@ Access the URDF [README](https://github.com/SAKErobotics/EZGripper/tree/master/e
 
 	  sudo adduser <user> dialout
 	  reboot
+
+### ROS Controller Issues:
+
+* Check whether the `joint_state_controller` and the `ezgripper_controller` modules are loaded:
+
+	  rosservice call /ezgripper_${ezgripper_module}/controller_manager/list_controllers
+
+### ROS Diagnostics
+
+* View the diagnostics of the ezgripper_module:
+
+	  rosrun rqt_runtime_monitor rqt_runtime_monitor
