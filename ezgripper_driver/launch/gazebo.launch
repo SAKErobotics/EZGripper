@@ -2,22 +2,22 @@
 <launch>
 
 	<!-- Configure the ezgripper module -->
-	<arg name="gripper_module" default="dual_gen1" doc="Gripper module dictonary - {dual_gen1, dual_gen2, quad}" />
+	<arg name="ezgripper_module" default="dual_gen2" doc="Gripper module dictonary - {dual_gen1, dual_gen2, quad}" />
 
-	<arg name="model" default="$(find ezgripper_driver)/urdf/$(arg gripper_module)/ezgripper_$(arg gripper_module)_standalone.urdf.xacro"/>
-	<param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
+	<arg name="model" default="$(find ezgripper_driver)/urdf/$(arg ezgripper_module)/ezgripper_$(arg ezgripper_module)_standalone.urdf.xacro"/>
+	<param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
 
 	<!-- Load the parameters -->
-  <rosparam file="$(find ezgripper_driver)/config/controllers_$(arg gripper_module).yaml" command="load"/>
+  <rosparam file="$(find ezgripper_driver)/config/controllers_$(arg ezgripper_module).yaml" command="load"/>
 
-  <node name="controller_spawner" pkg="controller_manager" type="spawner" args="arm_controller"/>
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+		ns="/ezgripper_$(arg ezgripper_module)" output="screen" args="ezgripper_controller"/>
 
   <!-- Start Gazebo with an empty world -->
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-  </include>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch"/>
 
 	<!-- Start the robot -->
   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"
-        args="-param robot_description -urdf -model ezgripper" />
+        args="-param robot_description -urdf -model ezgripper_$(arg ezgripper_module)" />
 
 </launch>
