@@ -202,13 +202,14 @@ references = []
 grippers = []
 gripper = None
 current_gripper_position = 0.0
-rate = rospy.Rate(20) # hz
+
 diags_last_sent = 0
 MAX_VELOCITY = 3.67
 max_effort = 0.0
 
 rospy.init_node('ezgripper_controller')
 rospy.loginfo("Started")
+rate = rospy.Rate(20) # hz
 
 port_name = rospy.get_param('~port', '/dev/ttyUSB0')
 baud = int(rospy.get_param('~baud', '57600'))
