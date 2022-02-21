@@ -110,7 +110,7 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 ## URDF Models
 ---
 
-Access the URDF [README](https://github.com/SAKErobotics/EZGripper/tree/master/ezgripper_driver/urdf) for additional information.
+Access the URDF [models](https://github.com/SAKErobotics/EZGripper/tree/master/ezgripper_driver/urdf) for additional information.
 
 
 ## TroubleShooting
