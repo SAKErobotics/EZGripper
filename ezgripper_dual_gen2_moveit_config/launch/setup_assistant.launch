@@ -1,4 +1,4 @@
-<!-- Re-launch the MoveIt Setup Assistant with this configuration package already loaded -->
+<!-- Re-launch the MoveIt! Setup Assistant with this configuration package already loaded -->
 <launch>
 
   <!-- Debug Info -->
@@ -8,9 +8,8 @@
 
   <!-- Run -->
   <node pkg="moveit_setup_assistant" type="moveit_setup_assistant" name="moveit_setup_assistant"
-        args="--config_pkg=ezgripper_dual_gen2_moveit_config"
-        launch-prefix="$(arg launch_prefix)"
-        required="true"
+	args="--config_pkg=ezgripper_dual_gen2_moveit_config"
+	launch-prefix="$(arg launch_prefix)"
         output="screen" />
 
 </launch>

@@ -5,7 +5,7 @@
 	<arg name="ezgripper_module" default="dual_gen2" doc="Gripper module dictonary - {dual_gen1, dual_gen2, quad}" />
 
 	<arg name="model" default="$(find ezgripper_driver)/urdf/$(arg ezgripper_module)/ezgripper_$(arg ezgripper_module)_standalone.urdf.xacro"/>
-	<param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
+	<param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
 
 	<!-- Load the parameters -->
   <rosparam file="$(find ezgripper_driver)/config/controllers_$(arg ezgripper_module).yaml" command="load"/>
