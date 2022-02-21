@@ -241,7 +241,6 @@ for gripper_name, servo_ids in gripper_params.items():
 while not rospy.is_shutdown():
 
     current_gripper_position = gripper.get_position(use_percentages = False)
-    print("Feedback = {}".format(current_gripper_position))
 
     # Publish Joint States
     jointState = JointState()

@@ -11,7 +11,9 @@
   <node name="ezgripper_controller" ns="ezgripper_dual_gen2" pkg="ezgripper_driver" type="ezgripper_action_server.py" output="screen"/>
 
   <!-- publish the robot state (tf transforms) -->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+		<remap from="joint_states" to="/ezgripper_dual_gen2/joint_states" />
+	</node>
 
   <include file="$(find ezgripper_dual_gen2_moveit_config)/launch/move_group.launch">
     <arg name="publish_monitored_planning_scene" value="true" />
