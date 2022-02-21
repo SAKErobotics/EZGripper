@@ -7,7 +7,11 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 ### Hardware
 ---
 
-* Install the python EZGripper library. For kinetic and melodic use [this link](https://github.com/SAKErobotics/libezgripper/tree/master) and for noetic use [the ubuntu 20.04 branch](https://github.com/SAKErobotics/libezgripper/tree/ubuntu-20.04) .
+* Install the python EZGripper library. For kinetic and melodic use [this link](https://github.com/SAKErobotics/libezgripper/tree/master) and for noetic use [the ubuntu 20.04 branch](https://github.com/SAKErobotics/libezgripper/tree/ubuntu-20.04).
+
+* Install the `upatras_gazebo_plugins` to enable Gazebo to mimic the EZGripper joints:
+
+	  git clone https://github.com/roboticsgroup/roboticsgroup_upatras_gazebo_plugins.git
 
 * Install all the remaining dependencies using `rosdep`, at the root of your ROS workspace:
 

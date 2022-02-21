@@ -8,7 +8,7 @@ then
 close_position=-0.27
 elif [ $ezgripper_module == 'dual_gen2' ]
 then
-close_position=1.92
+close_position=1.94
 elif [ $ezgripper_module == 'quad' ]
 then
 close_position=-0.28
