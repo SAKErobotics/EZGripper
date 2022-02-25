@@ -129,7 +129,8 @@ class GripperAction:
         """
 
         position = goal.command.position
-        effort = goal.command.max_effort
+        effort = rospy.get_param( \
+                '/move_group/ezgripper_dual_gen2/ezgripper_controller/max_effort')
         global max_effort
         max_effort = effort
         control_rate = rospy.Rate(20)
@@ -210,6 +211,12 @@ max_effort = 0.0
 rospy.init_node('ezgripper_controller')
 rospy.loginfo("Started")
 rate = rospy.Rate(20) # hz
+
+
+eff =
+
+print(eff)
+
 
 port_name = rospy.get_param('~port', '/dev/ttyUSB0')
 baud = int(rospy.get_param('~baud', '57600'))
