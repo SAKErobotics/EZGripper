@@ -3,7 +3,7 @@
   <arg name="paused" default="false"/>
   <arg name="gazebo_gui" default="true"/>
   <arg name="initial_joint_positions" doc="Initial joint configuration of the robot"
-       default=" -J left_ezgripper_knuckle_palm_L1_1 0"/>
+       default=" -J left_ezgripper_knuckle_1 0"/>
 
   <!-- startup simulated world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -13,7 +13,7 @@
   </include>
 
   <!-- send robot urdf to param server -->
-  <param name="robot_description" command="xacro  '$(find ezgripper_driver)/urdf/dual_gen2/ezgripper_dual_gen2_standalone.urdf.xacro'" />
+  <param name="robot_description" command="xacro  '$(find ezgripper_driver)/urdf/quad/ezgripper_quad_standalone.urdf.xacro'" />
 
   <!-- unpause only after loading robot model -->
   <arg name="unpause" value="$(eval '' if arg('paused') else '-unpause')" />
@@ -23,20 +23,19 @@
     respawn="false" output="screen" />
 
   <!-- Load joint controller parameters for Gazebo -->
-  <rosparam file="$(find ezgripper_dual_gen2_moveit_config)/config/gazebo_controllers.yaml" />
+  <rosparam file="$(find ezgripper_quad_moveit_config)/config/gazebo_controllers.yaml" />
 
   <!-- Spawn Gazebo ROS controllers -->
-  <node name="gazebo_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" ns="/ezgripper_dual_gen2" output="screen"
-		args="--namespace=/ezgripper_dual_gen2
+  <node name="gazebo_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" ns="/ezgripper_quad" output="screen"
+		args="--namespace=/ezgripper_quad
 		joint_state_controller
 		--timeout 20"/>
 
 	<!-- For simple controllers -->
 	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-		<remap from="joint_states" to="/ezgripper_dual_gen2/joint_states" />
+		<remap from="joint_states" to="/ezgripper_quad/joint_states" />
 	</node>
 
   <!-- Load ROS controllers -->
   <include file="$(dirname)/ros_controllers.launch"/>
-
 </launch>

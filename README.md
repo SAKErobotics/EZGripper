@@ -61,7 +61,7 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
 * Result of actuation:
 
-	<img src="https://user-images.githubusercontent.com/45683974/152959731-7b3d2ce5-a1f0-48c0-8ce1-68f767bfd9a0.gif"/>
+	![ezgripper_gif](https://user-images.githubusercontent.com/45683974/156144685-b91e2684-b484-4067-aee8-527d2e223650.gif)
 
 ### MoveIt!
 ---

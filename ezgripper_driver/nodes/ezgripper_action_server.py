@@ -39,6 +39,7 @@ EZGripper Action Server Module
 #  "Main loop" by searching for these terms.  They exist near the end of this file.
 #
 
+import sys
 from functools import partial
 from math import fabs
 import rospy
@@ -74,9 +75,10 @@ class GripperAction:
     _feedback = GripperCommandFeedback()
     _result = GripperCommandResult()
 
-    def __init__(self, name, gripper):
+    def __init__(self, name, gripper, gripper_module='dual_gen1'):
 
         self.gripper = gripper
+        self.gripper_module = gripper_module
         self._timeout = 3.0
         self._positional_buffer = 0.05
 
@@ -102,7 +104,8 @@ class GripperAction:
             rospy.loginfo("Release torque: done")
         else:
             rospy.loginfo("Go to position: start")
-            self.gripper.goto_position(position, effort, use_percentages = False)
+            self.gripper.goto_position(position, effort, \
+                use_percentages = False, gripper_module=self.gripper_module)
             rospy.loginfo("Go to position: done")
 
     def _check_state(self, position):
@@ -110,13 +113,15 @@ class GripperAction:
         Check if gripper has reached desired position
         """
         return fabs(self.gripper.get_position( \
-            use_percentages = False) - position) < self._positional_buffer
+            use_percentages = False, \
+                gripper_module=self.gripper_module) - position) < self._positional_buffer
 
     def _publish_feedback_and_update_result(self, position, effort):
         """
         Publish Gripper Feedback and Update Result
         """
-        self._feedback.position = self.gripper.get_position(use_percentages = False)
+        self._feedback.position = self.gripper.get_position( \
+            use_percentages = False, gripper_module=self.gripper_module)
         self._feedback.effort = effort
         self._feedback.reached_goal = self._check_state(position)
         self._result = self._feedback
@@ -201,6 +206,7 @@ all_servos = []
 references = []
 grippers = []
 gripper = None
+gripper_module = sys.argv[1]
 current_gripper_position = 0.0
 
 diags_last_sent = 0
@@ -231,7 +237,7 @@ for gripper_name, servo_ids in gripper_params.items():
 
     references.append( rospy.Service('~'+gripper_name+'/calibrate', \
         Empty, partial(calibrate_srv, gripper)))
-    references.append( GripperAction('~'+gripper_name, gripper) )
+    references.append( GripperAction('~'+gripper_name, gripper, gripper_module) )
 
     grippers.append(gripper)
 
@@ -240,7 +246,8 @@ for gripper_name, servo_ids in gripper_params.items():
 
 while not rospy.is_shutdown():
 
-    current_gripper_position = gripper.get_position(use_percentages = False)
+    current_gripper_position = gripper.get_position( \
+        use_percentages = False, gripper_module=gripper_module)
 
     # Publish Joint States
     jointState = JointState()
