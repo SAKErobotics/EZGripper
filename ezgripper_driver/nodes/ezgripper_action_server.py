@@ -206,8 +206,15 @@ all_servos = []
 references = []
 grippers = []
 gripper = None
-gripper_module = sys.argv[1]
 current_gripper_position = 0.0
+finger_joint = ''
+gripper_module = sys.argv[1]
+
+if gripper_module == 'dual_gen1' or gripper_module == 'quad':
+    finger_joint = 'left_ezgripper_knuckle_1'
+
+elif gripper_module == 'dual_gen2':
+    finger_joint = 'left_ezgripper_knuckle_palm_L1_1'
 
 diags_last_sent = 0
 MAX_VELOCITY = 3.67
@@ -253,7 +260,7 @@ while not rospy.is_shutdown():
     jointState = JointState()
     jointState.header = Header()
     jointState.header.stamp = rospy.Time.now()
-    jointState.name = ['left_ezgripper_knuckle_palm_L1_1']
+    jointState.name = [finger_joint]
     jointState.position = [current_gripper_position]
     jointState.velocity = [MAX_VELOCITY]
     jointState.effort = [max_effort]
