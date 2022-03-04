@@ -5,6 +5,7 @@ ezgripper_dual_gen2:
     joint: left_ezgripper_knuckle_palm_L1_1
     max_effort: 1.0
 
-  gazebo_ros_control:
-    pid_gains:
-      left_ezgripper_knuckle_palm_L1_1: {p: 100.0, i: 0.01, d: 10.0}
+gazebo_ros_control:
+  pid_gains:
+    left_ezgripper_knuckle_palm_L1_1: {p: 100.0, i: 0.01, d: 10.0}
+    left_ezgripper_knuckle_palm_L1_2: {p: 100.0, i: 0.01, d: 10.0}

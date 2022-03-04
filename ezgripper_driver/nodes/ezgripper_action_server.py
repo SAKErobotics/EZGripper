@@ -39,6 +39,7 @@ EZGripper Action Server Module
 #  "Main loop" by searching for these terms.  They exist near the end of this file.
 #
 
+import sys
 from functools import partial
 from math import fabs
 import rospy
@@ -74,9 +75,10 @@ class GripperAction:
     _feedback = GripperCommandFeedback()
     _result = GripperCommandResult()
 
-    def __init__(self, name, gripper):
+    def __init__(self, name, gripper, gripper_module='dual_gen1'):
 
         self.gripper = gripper
+        self.gripper_module = gripper_module
         self._timeout = 3.0
         self._positional_buffer = 0.05
 
@@ -102,7 +104,8 @@ class GripperAction:
             rospy.loginfo("Release torque: done")
         else:
             rospy.loginfo("Go to position: start")
-            self.gripper.goto_position(position, effort, use_percentages = False)
+            self.gripper.goto_position(position, effort, \
+                use_percentages = False, gripper_module=self.gripper_module)
             rospy.loginfo("Go to position: done")
 
     def _check_state(self, position):
@@ -110,13 +113,15 @@ class GripperAction:
         Check if gripper has reached desired position
         """
         return fabs(self.gripper.get_position( \
-            use_percentages = False) - position) < self._positional_buffer
+            use_percentages = False, \
+                gripper_module=self.gripper_module) - position) < self._positional_buffer
 
     def _publish_feedback_and_update_result(self, position, effort):
         """
         Publish Gripper Feedback and Update Result
         """
-        self._feedback.position = self.gripper.get_position(use_percentages = False)
+        self._feedback.position = self.gripper.get_position( \
+            use_percentages = False, gripper_module=self.gripper_module)
         self._feedback.effort = effort
         self._feedback.reached_goal = self._check_state(position)
         self._result = self._feedback
@@ -130,7 +135,8 @@ class GripperAction:
 
         position = goal.command.position
         effort = rospy.get_param( \
-                '/move_group/ezgripper_dual_gen2/ezgripper_controller/max_effort')
+                    '/move_group/ezgripper_%s/ezgripper_controller/max_effort' \
+                        % self.gripper_module)
         global max_effort
         max_effort = effort
         control_rate = rospy.Rate(20)
@@ -203,6 +209,14 @@ references = []
 grippers = []
 gripper = None
 current_gripper_position = 0.0
+finger_joint = ''
+gripper_module = sys.argv[1]
+
+if gripper_module == 'dual_gen1' or gripper_module == 'quad':
+    finger_joint = 'left_ezgripper_knuckle_1'
+
+elif gripper_module == 'dual_gen2':
+    finger_joint = 'left_ezgripper_knuckle_palm_L1_1'
 
 diags_last_sent = 0
 MAX_VELOCITY = 3.67
@@ -211,12 +225,6 @@ max_effort = 0.0
 rospy.init_node('ezgripper_controller')
 rospy.loginfo("Started")
 rate = rospy.Rate(20) # hz
-
-
-eff =
-
-print(eff)
-
 
 port_name = rospy.get_param('~port', '/dev/ttyUSB0')
 baud = int(rospy.get_param('~baud', '57600'))
@@ -238,7 +246,7 @@ for gripper_name, servo_ids in gripper_params.items():
 
     references.append( rospy.Service('~'+gripper_name+'/calibrate', \
         Empty, partial(calibrate_srv, gripper)))
-    references.append( GripperAction('~'+gripper_name, gripper) )
+    references.append( GripperAction('~'+gripper_name, gripper, gripper_module) )
 
     grippers.append(gripper)
 
@@ -247,13 +255,14 @@ for gripper_name, servo_ids in gripper_params.items():
 
 while not rospy.is_shutdown():
 
-    current_gripper_position = gripper.get_position(use_percentages = False)
+    current_gripper_position = gripper.get_position( \
+        use_percentages = False, gripper_module=gripper_module)
 
     # Publish Joint States
     jointState = JointState()
     jointState.header = Header()
     jointState.header.stamp = rospy.Time.now()
-    jointState.name = ['left_ezgripper_knuckle_palm_L1_1']
+    jointState.name = [finger_joint]
     jointState.position = [current_gripper_position]
     jointState.velocity = [MAX_VELOCITY]
     jointState.effort = [max_effort]

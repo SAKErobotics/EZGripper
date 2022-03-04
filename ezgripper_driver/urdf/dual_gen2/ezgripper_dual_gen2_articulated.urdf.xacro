@@ -176,6 +176,7 @@
 		<plugin filename="libroboticsgroup_upatras_gazebo_mimic_joint_plugin.so" name="mimicker">
 			<joint>left_ezgripper_knuckle_palm_L1_1</joint>
 			<mimicJoint>left_ezgripper_knuckle_palm_L1_2</mimicJoint>
+			<hasPID></hasPID>
 		</plugin>
 
 	</gazebo>
