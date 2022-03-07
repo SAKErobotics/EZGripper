@@ -11,7 +11,7 @@ then
 close_position=1.94
 elif [ $ezgripper_module == 'quad' ]
 then
-close_position=-0.28
+close_position=-0.27
 else
 echo No such ezgripper module found.
 exit 1
