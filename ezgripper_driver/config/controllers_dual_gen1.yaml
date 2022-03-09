@@ -1,4 +1,4 @@
-ezgripper_quad:
+ezgripper_dual_gen1:
 
   ezgripper_controller:
     type: position_controllers/GripperActionController
