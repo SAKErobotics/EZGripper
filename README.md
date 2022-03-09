@@ -1,69 +1,148 @@
 # EZGripper
 
-These are the EZGripper ROS drivers.  If you are not using ROS, use https://github.com/SAKErobotics/SAKErobotics
+A ROS package that serves as a driver to the [EZGripper module](https://sakerobotics.com/) designed by SAKE Robotics. If you are not using ROS, use https://github.com/SAKErobotics/SAKErobotics
 
-## Install the EZGripper ROS Driver (Indigo or Kinetic)
+## Tutorial
 
-1) Install the python EZGripper library https://github.com/SAKErobotics/libezgripper
+### Hardware
+---
 
-2) Install dependencies:
+* Install the python EZGripper library. For kinetic and melodic use [this link](https://github.com/SAKErobotics/libezgripper/tree/master) and for noetic use [the ubuntu 20.04 branch](https://github.com/SAKErobotics/libezgripper/tree/ubuntu-20.04).
 
-	$ sudo apt-get install ros-indigo-joystick-drivers
-	
-	or 
-	
-	$ sudo apt-get install ros-kinetic-joystick-drivers
+* Install the `upatras_gazebo_plugins` to enable Gazebo to mimic the EZGripper joints:
 
-3) Download code:
+	  git clone https://github.com/roboticsgroup/roboticsgroup_upatras_gazebo_plugins.git
 
-	$ cd ~/catkin_ws/src
-	$ git clone https://github.com/SAKErobotics/EZGripper.git
-	$ cd ..
-	$ catkin_make
+* Install all the remaining dependencies using `rosdep`, at the root of your ROS workspace:
 
-4) Setup parameters in joy.launch file
-  - ~port - serial device (like "/dev/ttyUSB0") or tcp endpoint (like "192.168.0.200:5000") to use
-  - ~baud - baud rate of the serial device, not used for tcp
-  - grippers - definition of grippers on this serial bus: the gripper name to use for the action interface and the servo id of the gripper (several ids if several grippers are to be used as one group), for example {left:[9], right:[10,11]}.  By default, SAKE Robotics delivers its grippers with address 1 for Duals and 1 and 2 for Quads and 57kbps.
+	  rosdep install --from-paths src --ignore-src -r -y
 
-5) Launch the node - example launch files to support various EZGripper configurations.  
+* Clone the ROS Driver at you `src` folder:
 
-	$ roslaunch ezgripper_driver joy.launch
-	  // joy.launch is configured for a single servo gripper (dual) and the USB interface
-	  
-	$ roslaunch ezgripper_driver joy2.launch
-	  // joy2.launch is configured for two independent servos (quad independent) and the USB interface
-	  
-	$ roslaunch ezgripper_driver joy2sync.launch
-	  // joy2sync.launch controls two servos as if it were a single servo (quad dependent) and the USB interface
-	  
-	$ roslaunch ezgripper_driver joy_tcp.launch
-	  // joy_tcp.launch controls a single servo via TCP instead of USB
-	
+	For ROS kinetic and melodic
+
+   	  git clone --branch=master https://github.com/SAKErobotics/EZGripper.git
+
+	For ROS noetic
+
+   	  git clone --branch=noetic-devel https://github.com/SAKErobotics/EZGripper.git
+
+
+* Build your workspace and source it:
+
+	  catkin_make && source devel/setup.bash
+
+* Connect your USB joystick to the system, and execute:
+
+      roslaunch ezgripper_driver joy.launch
+
+### Software
+---
+
+* Set the bash variable according to your gripper module - (`dual_gen1`, `dual_gen2`, `quad`):
+
+	  export ezgripper_module=<your_gripper_module>
+
+* Launch the gripper module in RViz :
+
+	  roslaunch ezgripper_driver display.launch ezgripper_module:=${ezgripper_module}
+
+* Similarly to launch in Gazebo:
+
+	  roslaunch ezgripper_driver gazebo.launch ezgripper_module:=${ezgripper_module}
+
+* To actuate the gripper into its respective open/close configurations in Gazebo:
+
+	  # Open Gripper
+	  rosrun ezgripper_driver open_gripper ezgripper_module:=${ezgripper_module}
+
+	  # Close Gripper
+	  rosrun ezgripper_driver close_gripper ezgripper_module:=${ezgripper_module}
+
+* Result of actuation:
+
+	<img src="https://user-images.githubusercontent.com/45683974/152959731-7b3d2ce5-a1f0-48c0-8ce1-68f767bfd9a0.gif"/>
+
+### MoveIt!
+---
+
+* To launch the ezgripper in RViz only:
+
+	  roslaunch ezgripper_${ezgripper_module}_moveit_config demo.launch
+
+* To launch the ezgripper in Gazebo and RViz for control:
+
+	  roslaunch ezgripper_${ezgripper_module}_moveit_config demo_gazebo.launch
+
+* To control the ezgripper hardware through MoveIt!:
+
+	  roslaunch ezgripper_${ezgripper_module}_moveit_config ezgripper_${ezgripper_module}_moveit_planning_execution.launch
+
+## Additional Configurations
+
+* Setup parameters in joy.launch file
+  - **`~port`** - serial device (like `/dev/ttyUSB0`) or tcp endpoint (like `192.168.0.200:5000`) to use
+  - **`~baud`** - baud rate of the serial device, not used for tcp
+  - **`grippers`** - definition of grippers on this serial bus
+  <br/>The gripper name to use for the action interface and the servo id of the gripper (several ids if several grippers are to be used as one group). For example `{left:[9], right:[10,11]}`.
+  <br/>By default, SAKE Robotics delivers its grippers with address 1 for Duals and 1 and 2 for Quads and 57kbps.
+
+* Example launch files to support various EZGripper configurations.
+
+	  roslaunch ezgripper_driver joy.launch
+	  # joy.launch is configured for a single servo gripper (dual) and the USB interface
+
+	  roslaunch ezgripper_driver joy2.launch
+	  # joy2.launch is configured for two independent servos (quad independent) and the USB interface
+
+	  roslaunch ezgripper_driver joy2sync.launch
+	  # joy2sync.launch controls two servos as if it were a single servo (quad dependent) and the USB interface
+
+	  roslaunch ezgripper_driver joy_tcp.launch
+	  # joy_tcp.launch controls a single servo via TCP instead of USB
+
 ## Action API
+---
 
-The driver provides an implementation of the SimpleActionServer, that takes in [control_msgs/GripperCommand](http://docs.ros.org/indigo/api/control_msgs/html/action/GripperCommand.html) actions.
-A sample client ([nodes/client.py](ezgripper_driver/nodes/client.py)) is included that provides joystick control using the action API.
+* The driver provides an implementation of the SimpleActionServer, that takes in [control_msgs/GripperCommand](http://docs.ros.org/indigo/api/control_msgs/html/action/GripperCommand.html) actions.<br/>
+* A sample client ([nodes/client.py](ezgripper_driver/nodes/client.py)) is included that provides joystick control using the action API.
 
-## urdf Models
+## URDF Models
+---
 
-see README.md in the urdf directory.
-https://github.com/SAKErobotics/EZGripper/tree/master/ezgripper_driver/urdf
+Access the URDF [models](https://github.com/SAKErobotics/EZGripper/tree/master/ezgripper_driver/urdf) for additional information.
 
 
 ## TroubleShooting
+---
 
-Serial connection issues:
+### Serial connection issues:
 
-	Error message: 'Serial' object has no attribute 'setParity'  --- this message indicates you have a new version of serial library that causes issues.  Do the following command to load an older pySerial library.
-	$ sudo pip install "pySerial>=2.0,<=2.9999"
-	
-	Error message: permission denied (get accurate error message).  This indicates the user does not have privellages to use the /dev/ttyUSBx.  The solution is to add the <user> to the "dialout" group.  After executing the following command, reboot.
-	$ sudo adduser <user> dialout
-	reboot
-	
+* The following message indicates you have a new version of serial library that causes issues.
 
+	  Error message: 'Serial' object has no attribute 'setParity'  ---
 
-	
-	
-	
+  Do the following command to load an older serial library.
+
+	  sudo apt-get install python-serial==2.0.0
+
+* This indicates the user does not have privileges to use the `/dev/ttyUSBx`:
+
+	  Error message: permission denied (get accurate error message).
+
+	The solution is to add the `<user>` to the `dialout` group.  After executing the following command, reboot.
+
+	  sudo adduser <user> dialout
+	  reboot
+
+### ROS Controller Issues:
+
+* Check whether the `joint_state_controller` and the `ezgripper_controller` modules are loaded:
+
+	  rosservice call /ezgripper_${ezgripper_module}/controller_manager/list_controllers
+
+### ROS Diagnostics
+
+* View the diagnostics of the ezgripper_module:
+
+	  rosrun rqt_runtime_monitor rqt_runtime_monitor
