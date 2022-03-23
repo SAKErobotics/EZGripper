@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+	<!-- Configure the ezgripper module -->
+	<arg name="ezgripper_module" default="dual_gen2" doc="Gripper module dictonary - {dual_gen1, dual_gen2, quad}" />
+
+	<!-- Load the parameters -->
+  <rosparam file="$(find ezgripper_control)/config/controllers_$(arg ezgripper_module).yaml" command="load"/>
+
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+		ns="/ezgripper_$(arg ezgripper_module)" output="screen" args="ezgripper_controller"/>
+
+</launch>
