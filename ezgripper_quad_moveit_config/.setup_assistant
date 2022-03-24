@@ -1,6 +1,6 @@
 moveit_setup_assistant_config:
   URDF:
-    package: ezgripper_driver
+    package: ezgripper_description
     relative_path: urdf/quad/ezgripper_quad_standalone.urdf.xacro
     xacro_args: ""
   SRDF:

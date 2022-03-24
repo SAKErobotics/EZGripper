@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-ezgripper_module=$(echo $1| cut -c 19-27)
 max_effort=1.0
 
 if [ $ezgripper_module == 'dual_gen1' ]
@@ -9,6 +8,12 @@ close_position=-0.27
 elif [ $ezgripper_module == 'dual_gen2' ]
 then
 close_position=1.94
+elif [ $ezgripper_module == 'dual_gen2_single_mount' ]
+then
+close_position=0.27
+elif [ $ezgripper_module == 'dual_gen2_triple_mount' ]
+then
+close_position=0.27
 elif [ $ezgripper_module == 'quad' ]
 then
 close_position=-0.27

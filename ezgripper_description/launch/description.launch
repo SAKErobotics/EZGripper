@@ -2,7 +2,8 @@
 <launch>
 
 	<!-- Configure the ezgripper module -->
-	<arg name="ezgripper_module" default="dual_gen2" doc="Gripper module dictonary - {dual_gen1, dual_gen2, quad}" />
+	<arg name="ezgripper_module" default="dual_gen2_single_mount"
+		doc="Gripper module dictonary - {dual_gen1, dual_gen2, dual_gen2_single_mount, dual_gen2_triple_mount, quad}" />
 
   <arg name="model" default="$(find ezgripper_description)/urdf/$(arg ezgripper_module)/ezgripper_$(arg ezgripper_module)_standalone.urdf.xacro"/>
 
