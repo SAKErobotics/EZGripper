@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
 
+	<!-- World file to load -->
+	<arg name="world_name" default="mars.world"/>
+
 	<!-- Configure the ezgripper module -->
 	<arg name="ezgripper_module" default="dual_gen2_single_mount"
 		doc="Gripper module dictonary - {dual_gen1, dual_gen2, dual_gen2_single_mount, dual_gen2_triple_mount, quad}" />
@@ -16,7 +19,14 @@
   </include>
 
   <!-- Start Gazebo with an empty world -->
-  <include file="$(find gazebo_ros)/launch/empty_world.launch"/>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+		<arg name="world_name" 		value="$(find ezgripper_gazebo)/worlds/$(arg world_name)"/>
+		<arg name="paused"        value="false"/>
+		<arg name="use_sim_time"  value="true"/>
+		<arg name="gui"           value="true"/>
+		<arg name="headless"      value="true"/>
+		<arg name="debug"         value="false"/>
+	</include>
 
 	<!-- Start the robot -->
   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"

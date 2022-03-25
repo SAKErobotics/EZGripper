@@ -213,8 +213,11 @@ gripper_module = sys.argv[1]
 if gripper_module == 'dual_gen1' or gripper_module == 'quad':
     finger_joint = 'left_ezgripper_knuckle_1'
 
-elif gripper_module == 'dual_gen2':
+elif gripper_module == 'dual_gen2' or gripper_module == 'dual_gen2_single_mount':
     finger_joint = 'left_ezgripper_knuckle_palm_L1_1'
+
+elif gripper_module == 'dual_gen2_triple_mount':
+    finger_joint = 'left1_ezgripper_knuckle_palm_L1_1'
 
 diags_last_sent = 0
 MAX_VELOCITY = 3.67

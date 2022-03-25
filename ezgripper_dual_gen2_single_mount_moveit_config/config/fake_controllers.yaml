@@ -1,0 +1,8 @@
+controller_list:
+  - name: fake_ezgripper_planning_group_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - left_ezgripper_knuckle_palm_L1_1
+initial:  # Define initial robot poses per group
+  - group: ezgripper_planning_group
+    pose: open

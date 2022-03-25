@@ -10,14 +10,14 @@
 			<visual>
 				<origin xyz="0 0 0" rpy="0 0 0"/>
 				<geometry>
-					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount//SAKE_Triple_Mount.stl"/>
+					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount/SAKE_Triple_Mount.stl"/>
 				</geometry>
 				<material name="blue"/>
 			</visual>
 			<collision>
 				<origin xyz="0 0 0" rpy="0 0 0"/>
 				<geometry>
-					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount//SAKE_Triple_Mount.stl"/>
+					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount/SAKE_Triple_Mount.stl"/>
 				</geometry>
 			</collision>
 			<inertial>
@@ -59,14 +59,14 @@
 			<visual>
 				<origin xyz="0.0 0 0" rpy="0 0 0"/>
 				<geometry>
-					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount//SAKE_Palm_IM.stl"/>
+					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount/SAKE_Palm_IM.stl"/>
 				</geometry>
 				<material name="blue"/>
 			</visual>
 			<collision>
 				<origin xyz="0.0 0 0" rpy="0 0 0"/>
 				<geometry>
-					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount//SAKE_Palm_IM.stl"/>
+					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount/SAKE_Palm_IM.stl"/>
 				</geometry>
 			</collision>
 			<inertial>
@@ -127,14 +127,14 @@
 			<visual>
 				<origin xyz="0 0 0" rpy="0 0 0"/>
 				<geometry>
-					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount//SAKE_Finger_L1_IM.stl"/>
+					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount/SAKE_Finger_L1_IM.stl"/>
 				</geometry>
 				<material name="grey"/>
 			</visual>
 			<collision>
 				<origin xyz="0 0 0" rpy="0 0 0"/>
 				<geometry>
-					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount//SAKE_Finger_L1_IM.stl"/>
+					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount/SAKE_Finger_L1_IM.stl"/>
 				</geometry>
 			</collision>
 			<inertial>
@@ -156,14 +156,14 @@
 			<visual>
 				<origin xyz="0 0 0" rpy="0 0 0"/>
 				<geometry>
-					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount//SAKE_Finger_L2_IM.stl"/>
+					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount/SAKE_Finger_L2_IM.stl"/>
 				</geometry>
 				<material name="grey"/>
 			</visual>
 			<collision>
 				<origin xyz="0 0 0" rpy="0 0 0"/>
 				<geometry>
-					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount//SAKE_Finger_L2_IM.stl"/>
+					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount/SAKE_Finger_L2_IM.stl"/>
 				</geometry>
 			</collision>
 			<inertial>
@@ -185,14 +185,14 @@
 			<visual>
 				<origin xyz="0 0 0" rpy="0 0 0"/>
 				<geometry>
-					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount//SAKE_Finger_Pad_IM.stl"/>
+					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount/SAKE_Finger_Pad_IM.stl"/>
 				</geometry>
 				<material name="grey"/>
 			</visual>
 			<collision>
 				<origin xyz="0 0 0" rpy="0 0 0"/>
 				<geometry>
-					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount//SAKE_Finger_Pad_IM.stl"/>
+					<mesh filename="package://ezgripper_description/meshes/dual_gen2_triple_mount/SAKE_Finger_Pad_IM.stl"/>
 				</geometry>
 			</collision>
 			<inertial>

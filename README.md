@@ -27,7 +27,6 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
    	  git clone --branch=noetic-devel https://github.com/SAKErobotics/EZGripper.git
 
-
 * Build your workspace and source it:
 
 	  catkin_make && source devel/setup.bash
@@ -39,7 +38,7 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 ### Software
 ---
 
-* Set the bash variable according to your gripper module - (`dual_gen1`, `dual_gen2`, `quad`):
+* Set the bash variable according to your gripper module - (`dual_gen1`, `dual_gen2`, `dual_gen2_single_mount`, `dual_gen2_triple_mount`, `quad`):
 
 	  export ezgripper_module=<your_gripper_module>
 
@@ -61,7 +60,7 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
 * Result of actuation:
 
-	![ezgripper_gif](https://user-images.githubusercontent.com/45683974/156144685-b91e2684-b484-4067-aee8-527d2e223650.gif)
+	![ezgripper_gif](https://user-images.githubusercontent.com/45683974/160160044-1a240688-a3f1-4308-a370-0df4f2a84611.gif)
 
 ### MoveIt!
 ---

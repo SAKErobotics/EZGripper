@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="default">
+
+	  <!-- Position the camera -->
+    <gui>
+      <camera name="gzclient_camera">
+				<pose>0.82 -0.74 0.38 0 0.16 2.29</pose>
+      </camera>
+    </gui>
+
+
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+	    <pose>0 0 0 0 0 0</pose>
+    </include>
+
+    <!-- A ground plane -->
+    <include>
+      <uri>model://mars</uri>
+      <pose>0 0 0 0 0 0</pose>
+    </include>
+
+    <scene>
+      <sky>
+        <clouds>
+          <speed>50</speed>
+        </clouds>
+      </sky>
+        <ambient>0 0 0 1.0</ambient>
+        <shadows>0</shadows>
+    </scene>
+
+  </world>
+</sdf>
