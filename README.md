@@ -104,7 +104,7 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 ---
 
 * The driver provides an implementation of the SimpleActionServer, that takes in [control_msgs/GripperCommand](http://docs.ros.org/indigo/api/control_msgs/html/action/GripperCommand.html) actions.<br/>
-* A sample client ([nodes/client.py](ezgripper_driver/nodes/client.py)) is included that provides joystick control using the action API.
+* A sample client ([scripts/client.py](ezgripper_driver/scripts/client.py)) is included that provides joystick control using the action API.
 
 ## URDF Models
 ---
