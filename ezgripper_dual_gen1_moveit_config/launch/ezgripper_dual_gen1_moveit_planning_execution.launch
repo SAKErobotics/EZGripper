@@ -8,7 +8,7 @@
   </include>
 
 	<!-- Launch ezgripper action server -->
-  <node name="ezgripper_controller" ns="ezgripper_dual_gen1" pkg="ezgripper_driver"
+  <node name="ezgripper_controller" ns="ezgripper_dual_gen1" pkg="ezgripper_description"
 		type="ezgripper_action_server.py" args="dual_gen1" output="screen"/>
 
   <!-- publish the robot state (tf transforms) -->
