@@ -134,7 +134,9 @@ class GripperAction:
         """
 
         position = goal.command.position
-        effort = goal.command.max_effort
+        effort = rospy.get_param( \
+                    '/move_group/ezgripper_%s/ezgripper_controller/max_effort' \
+                        % self.gripper_module)
         global max_effort
         max_effort = effort
         control_rate = rospy.Rate(20)
