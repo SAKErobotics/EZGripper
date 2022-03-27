@@ -1,0 +1,4 @@
+controller_list:
+  - name: fake_ezgripper_planning_group_controller
+    joints:
+      - left_ezgripper_knuckle_1

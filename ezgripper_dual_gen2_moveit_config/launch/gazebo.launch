@@ -11,7 +11,7 @@
   </include>
 
   <!-- send robot urdf to param server -->
-	<arg name="model" default="$(find ezgripper_driver)/urdf/dual_gen2/ezgripper_dual_gen2_standalone.urdf.xacro"/>
+	<arg name="model" default="$(find ezgripper_description)/urdf/dual_gen2/ezgripper_dual_gen2_standalone.urdf.xacro"/>
 	<param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
 
   <!-- push robot_description to factory and spawn robot in gazebo at the origin, change x,y,z arguments to spawn in a different position -->
