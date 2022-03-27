@@ -4,12 +4,12 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
 ## Tutorial
 
-### Hardware
+### Installation
 ---
 
 * Install the python EZGripper library. For kinetic and melodic use [this link](https://github.com/SAKErobotics/libezgripper/tree/master) and for noetic use [the ubuntu 20.04 branch](https://github.com/SAKErobotics/libezgripper/tree/ubuntu-20.04).
 
-* Install the `upatras_gazebo_plugins` to enable Gazebo to mimic the EZGripper joints:
+* Install the `upatras_gazebo_plugins` by cloning the packge to your catkin workspace in order to enable Gazebo to mimic the EZGripper joints:
 
 	  git clone https://github.com/roboticsgroup/roboticsgroup_upatras_gazebo_plugins.git
 
@@ -19,9 +19,14 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
 * Clone the ROS Driver at you `src` folder:
 
-	For ROS kinetic and melodic
+	For ROS kinetic
 
-   	  git clone --branch=master https://github.com/SAKErobotics/EZGripper.git
+   	  git clone --branch=kinetic-devel https://github.com/SAKErobotics/EZGripper.git
+
+	For ROS Melodic
+
+   	  git clone --branch=melodic-devel https://github.com/SAKErobotics/EZGripper.git
+
 
 	For ROS noetic
 
@@ -31,16 +36,27 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
 	  catkin_make && source devel/setup.bash
 
-* Connect your USB joystick to the system, and execute:
+* For quickly testing hardware connect your USB joystick to the system, and execute:
 
       roslaunch ezgripper_driver joy.launch
 
-### Software
+### Simulation testing
 ---
 
-* Set the bash variable according to your gripper module - (`dual_gen1`, `dual_gen2`, `dual_gen2_single_mount`, `dual_gen2_triple_mount`, `quad`):
+* Set the following bash variable according to your gripper module version. Execute this command in your terminal  or you can add this line to your ~/.bashrc file
 
 	  export ezgripper_module=<your_gripper_module>
+
+	E.g. for `dual_gen2_single_mount` the command would be 
+
+	  export ezgripper_module=dual_gen2_single_mount
+
+	or for `dual_gen2_triple_mount` the command would be
+
+	  export ezgripper_module=dual_gen2_triple_mount
+
+	Older legacy versions are also maintained and can be setting this bash variable appropriately to one of these: `dual_gen1`, `dual_gen2` or `quad`.
+
 
 * Launch the gripper module in RViz :
 
@@ -50,7 +66,7 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
 	  roslaunch ezgripper_gazebo gazebo.launch ezgripper_module:=${ezgripper_module}
 
-* To actuate the gripper into its respective open/close configurations in Gazebo:
+* To actuate the gripper into its respective open/close configurations in Gazebo, in a new terminal execute these commands:
 
 	  # Open Gripper
 	  rosrun ezgripper_control open_gripper
