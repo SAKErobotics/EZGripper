@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+max_effort=1.0
+
+if [ $ezgripper_module == 'dual_gen1' ]
+then
+open_position=1.5707
+elif [ $ezgripper_module == 'dual_gen2' ]
+then
+open_position=0.0
+elif [ $ezgripper_module == 'dual_gen2_single_mount' ]
+then
+open_position=-1.5707
+elif [ $ezgripper_module == 'dual_gen2_triple_mount' ]
+then
+open_position=-1.5707
+elif [ $ezgripper_module == 'quad' ]
+then
+open_position=1.5707
+else
+echo No such ezgripper module found.
+exit 1
+fi
+
+rostopic pub /ezgripper_$ezgripper_module/ezgripper_controller/gripper_cmd/goal \
+  control_msgs/GripperCommandActionGoal \
+    "goal: {command: {position: $open_position, max_effort: $max_effort}}" -1 # -1 is to publish and latch for 3.0s

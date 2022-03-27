@@ -27,7 +27,6 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
    	  git clone --branch=noetic-devel https://github.com/SAKErobotics/EZGripper.git
 
-
 * Build your workspace and source it:
 
 	  catkin_make && source devel/setup.bash
@@ -39,29 +38,29 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 ### Software
 ---
 
-* Set the bash variable according to your gripper module - (`dual_gen1`, `dual_gen2`, `quad`):
+* Set the bash variable according to your gripper module - (`dual_gen1`, `dual_gen2`, `dual_gen2_single_mount`, `dual_gen2_triple_mount`, `quad`):
 
 	  export ezgripper_module=<your_gripper_module>
 
 * Launch the gripper module in RViz :
 
-	  roslaunch ezgripper_driver display.launch ezgripper_module:=${ezgripper_module}
+	  roslaunch ezgripper_description display.launch ezgripper_module:=${ezgripper_module}
 
 * Similarly to launch in Gazebo:
 
-	  roslaunch ezgripper_driver gazebo.launch ezgripper_module:=${ezgripper_module}
+	  roslaunch ezgripper_gazebo gazebo.launch ezgripper_module:=${ezgripper_module}
 
 * To actuate the gripper into its respective open/close configurations in Gazebo:
 
 	  # Open Gripper
-	  rosrun ezgripper_driver open_gripper ezgripper_module:=${ezgripper_module}
+	  rosrun ezgripper_control open_gripper
 
 	  # Close Gripper
-	  rosrun ezgripper_driver close_gripper ezgripper_module:=${ezgripper_module}
+	  rosrun ezgripper_control close_gripper
 
 * Result of actuation:
 
-	<img src="https://user-images.githubusercontent.com/45683974/152959731-7b3d2ce5-a1f0-48c0-8ce1-68f767bfd9a0.gif"/>
+	![ezgripper_gif](https://user-images.githubusercontent.com/45683974/160160044-1a240688-a3f1-4308-a370-0df4f2a84611.gif)
 
 ### MoveIt!
 ---
@@ -105,7 +104,7 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 ---
 
 * The driver provides an implementation of the SimpleActionServer, that takes in [control_msgs/GripperCommand](http://docs.ros.org/indigo/api/control_msgs/html/action/GripperCommand.html) actions.<br/>
-* A sample client ([nodes/client.py](ezgripper_driver/nodes/client.py)) is included that provides joystick control using the action API.
+* A sample client ([scripts/client.py](ezgripper_driver/scripts/client.py)) is included that provides joystick control using the action API.
 
 ## URDF Models
 ---
