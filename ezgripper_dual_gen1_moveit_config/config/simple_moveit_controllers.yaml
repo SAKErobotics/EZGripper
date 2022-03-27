@@ -1,0 +1,7 @@
+controller_list:
+  - name: ezgripper_dual_gen1/ezgripper_controller
+    action_ns: gripper_cmd
+    type: GripperCommand
+    max_effort: 1.0
+    joints:
+      - left_ezgripper_knuckle_1

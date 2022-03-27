@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: ezgripper_description
+    relative_path: urdf/dual_gen2_single_mount/ezgripper_dual_gen2_single_mount_standalone.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/ezgripper_dual_gen2_single_mount.srdf
+  CONFIG:
+    author_name: Leander Stephen D'Souza
+    author_email: leander@blackcoffeerobotics.com
+    generated_timestamp: 1648187477
