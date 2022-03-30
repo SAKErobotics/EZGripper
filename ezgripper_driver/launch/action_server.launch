@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+	<!-- Load the parameters -->
+  <rosparam file="$(find ezgripper_control)/config/gripper_params.yaml" command="load"/>
+
+	<!-- Launch the action server -->
+	<node name="ezgripper_controller" pkg="ezgripper_driver" type="ezgripper_action_server.py" output="screen" />
+
+</launch>
