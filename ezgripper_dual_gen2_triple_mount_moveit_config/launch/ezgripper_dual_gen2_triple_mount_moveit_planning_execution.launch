@@ -18,12 +18,15 @@
 	</node>
 
   <include file="$(find ezgripper_dual_gen2_triple_mount_moveit_config)/launch/move_group.launch">
-    <arg name="publish_monitored_planning_scene" value="true" />
-		<arg name="moveit_controller_manager" value="simple" /> <!-- ros_control does not support Gripper Command -->
+    <arg name="allow_trajectory_execution" value="true"/>
+    <arg name="fake_execution" value="false"/>
+    <arg name="info" value="true"/>
+		<arg name="debug" value="false"/>
   </include>
 
   <include file="$(find ezgripper_dual_gen2_triple_mount_moveit_config)/launch/moveit_rviz.launch">
-    <arg name="rviz_config" value="$(dirname)/moveit.rviz"/>
+    <arg name="config" value="true"/>
+		<arg name="debug" value="false"/>
   </include>
 
 </launch>
