@@ -1,6 +1,5 @@
 ezgripper_controller:
 
-
     port: /dev/ttyUSB0
     baudrate: 57600
 
@@ -9,4 +8,5 @@ ezgripper_controller:
     gripper_1:
       action_name: gripper_cmd
       servo_ids: [1]
-      module_type: dual_gen2_single_mount
+      module_type: dual_gen1
+      robot_ns: ezgripper_dual_gen1 # namespace of the robot

@@ -1,0 +1,12 @@
+ezgripper_controller:
+
+    port: /dev/ttyUSB0
+    baudrate: 57600
+
+    no_of_grippers: 1
+
+    gripper_1:
+      action_name: gripper_cmd
+      servo_ids: [1]
+      module_type: quad
+      robot_ns: ezgripper_quad # namespace of the robot

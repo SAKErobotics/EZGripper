@@ -6,8 +6,9 @@ import sys
 from ezgripper_libs.ezgripper_interface import EZGripper
 from PyQt5 import QtWidgets
 
-rospy.init_node('hello_ezgripper')
-gripper = EZGripper('ezgripper/main')
+rospy.init_node('ezgripper_gui_node')
+gripper = EZGripper( \
+   '/ezgripper_dual_gen2_single_mount/ezgripper_controller/gripper_cmd')
 
 class GripperGUI(QtWidgets.QMainWindow):
 

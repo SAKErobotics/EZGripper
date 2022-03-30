@@ -52,9 +52,6 @@ class GripperAction:
     GripperCommand Action Server
     """
 
-    _feedback = GripperCommandFeedback()
-    _result = GripperCommandResult()
-
     def __init__(self):
 
         self.update_rate = 50
@@ -64,31 +61,42 @@ class GripperAction:
         self._positional_buffer = 0.05
         self.all_servos = []
 
-        self.port = rospy.get_param("/ezgripper_controller/port")
-        self.baudrate = rospy.get_param("/ezgripper_controller/baudrate")
-        self.no_of_grippers = rospy.get_param("/ezgripper_controller/no_of_grippers")
+        self.port = rospy.get_param("~port")
+        self.baudrate = rospy.get_param("~baudrate")
+        self.no_of_grippers = rospy.get_param("~no_of_grippers")
 
+        self._feedback = {}
+        self._result = {}
         self.grippers = {}
-        connection = create_connection(dev_name=self.port, baudrate=self.baudrate)
+        self.joint_state_pub = {}
+
+        # connection = create_connection(dev_name=self.port, baudrate=self.baudrate)
 
         for i in range(1, int(self.no_of_grippers) + 1):
 
-            action_name = rospy.get_param("/ezgripper_controller/gripper_{}/action_name".format(i))
-            servo_ids = rospy.get_param("/ezgripper_controller/gripper_{}/servo_ids".format(i))
-            module_type = rospy.get_param("/ezgripper_controller/gripper_{}/module_type".format(i))
+            action_name = rospy.get_param("~gripper_{}/action_name".format(i))
+            servo_ids = rospy.get_param("~gripper_{}/servo_ids".format(i))
+            module_type = rospy.get_param("~gripper_{}/module_type".format(i))
+            robot_ns = rospy.get_param("~gripper_{}/robot_ns".format(i))
 
-            self.grippers[action_name] = Gripper(connection, action_name, servo_ids)
-            self.all_servos += self.grippers[action_name].servos
+            self._feedback[action_name] = GripperCommandFeedback()
+            self._result[action_name] = GripperCommandResult()
 
-            self.grippers[action_name].calibrate()
-            self.grippers[action_name].open()
+            # self.grippers[action_name] = Gripper(connection, action_name, servo_ids)
+            # self.all_servos += self.grippers[action_name].servos
 
-            rospy.Service('~/'+ action_name + '/calibrate', \
+            # self.grippers[action_name].calibrate()
+            # self.grippers[action_name].open()
+
+            self.joint_state_pub[action_name] = \
+                rospy.Publisher('/{}/joint_states'.format(robot_ns), JointState, queue_size=1)
+
+            rospy.Service(robot_ns + '/ezgripper_controller/'+ action_name + '/calibrate', \
                 Empty, partial(self.calibrate_srv, action_name))
 
             self._as = \
                 SimpleActionServer( \
-                    action_name, \
+                    robot_ns + '/ezgripper_controller/'+ action_name, \
                     GripperCommandAction, \
                     partial(self._execute_callback, action_name, module_type), \
                     False)
@@ -96,12 +104,11 @@ class GripperAction:
             self._as.start()
 
         # Publishers
-        self.joint_state_pub = rospy.Publisher('joint_states', JointState, queue_size=1)
         self.diagnostics_pub = rospy.Publisher('/diagnostics', DiagnosticArray, queue_size=1)
 
         # Timers
-        rospy.Timer(rospy.Duration(self.time_period), self.joint_state_update)
-        rospy.Timer(1.0, self.diagnostics_and_servo_update)
+        # rospy.Timer(rospy.Duration(self.time_period), self.joint_state_update)
+        # rospy.Timer(rospy.Duration(1.0), self.diagnostics_and_servo_update)
 
         rospy.loginfo("Gripper server ready")
 
@@ -134,7 +141,7 @@ class GripperAction:
 
             msg.name = [finger_joint]
 
-            self.joint_state_pub.publish(msg)
+            self.joint_state_pub[action_name].publish(msg)
 
 
     def diagnostics_and_servo_update(self, event):
@@ -238,12 +245,12 @@ class GripperAction:
         """
         Publish Gripper Feedback and Update Result
         """
-        self._feedback.position = self.grippers[action_name].get_position( \
+        self._feedback[action_name].position = self.grippers[action_name].get_position( \
             use_percentages = False, gripper_module = module_type)
-        self._feedback.effort = effort
-        self._feedback.reached_goal = self._check_state(action_name, module_type, position)
-        self._result = self._feedback
-        self._as.publish_feedback(self._feedback)
+        self._feedback[action_name].effort = effort
+        self._feedback[action_name].reached_goal = self._check_state(action_name, module_type, position)
+        self._result[action_name] = self._feedback[action_name]
+        self._as.publish_feedback(self._feedback[action_name])
 
     def _execute_callback(self, action_name, module_type, goal_handle):
         """
@@ -267,7 +274,7 @@ class GripperAction:
 
             # Check if goal is reached
             if self._check_state(action_name, module_type, position):
-                self._as.set_succeeded(self._result)
+                self._as.set_succeeded(self._result[action_name])
                 rospy.loginfo("Gripper has reached desired position")
                 return
 
@@ -275,7 +282,7 @@ class GripperAction:
             if self._as.is_preempt_requested():
                 rospy.loginfo('Preempted')
                 self._as.set_preempted()
-                self._as.set_aborted(self._result)
+                self._as.set_aborted(self._result[action_name])
                 return
 
             time.sleep(0.01)

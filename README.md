@@ -95,12 +95,23 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
 ## Additional Configurations
 
-* Setup parameters in joy.launch file
-  - **`~port`** - serial device (like `/dev/ttyUSB0`) or tcp endpoint (like `192.168.0.200:5000`) to use
-  - **`~baud`** - baud rate of the serial device, not used for tcp
-  - **`grippers`** - definition of grippers on this serial bus
-  <br/>The gripper name to use for the action interface and the servo id of the gripper (several ids if several grippers are to be used as one group). For example `{left:[9], right:[10,11]}`.
-  <br/>By default, SAKE Robotics delivers its grippers with address 1 for Duals and 1 and 2 for Quads and 57kbps.
+* Setup parameters in [joy.yaml](ezgripper_control/config/joy.yaml) file
+  - **`port`** - <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;serial device (like `/dev/ttyUSB0`) or tcp endpoint (like `192.168.0.200:5000`) to use.
+  - **`baudrate`** - <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;baud rate of the serial device, not used for tcp.
+  - **`no_of_grippers`** - <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;number of grippers to control.
+  - Depending upon the number of grippers, gripper profiles can be created as shown:
+
+		gripper_1:
+			action_name: gripper_cmd
+			servo_ids: [1]
+			module_type: dual_gen2_single_mount
+			robot_ns: main
+
+	**`action_name`** - <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name of the action to be used.<br/>
+  **`servo_ids`** - <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list of servo ids to control. (several ids if several grippers are to be used as one group). For example `[9]` and `[10,11]` for two grippers.<br/>
+	By default, SAKE Robotics delivers its grippers with address 1 for Duals and 1 and 2 for Quads and 57kbps.<br/>
+  **`module_type`** - <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type of the gripper module. (`dual_gen1`, `dual_gen2`, `dual_gen2_single_mount`, `dual_gen2_triple_mount`, `quad`).<br/>
+	**`robot_ns`** - <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;namespace of the robot.
 
 * Example launch files to support various EZGripper configurations.
 
