@@ -112,8 +112,8 @@ class EZGripper():
 
         self._module_type = module_type
 
-        self.step_open_pos = 0.0
-        self.step_close_pos = 0.0
+        self.step_open_pos = self._close_position
+        self.step_close_pos = self._open_position
 
         self._grip_value = self._open_position
         self._connect_to_gripper_action()
@@ -155,15 +155,15 @@ class EZGripper():
         step = abs(self._close_position - self._open_position) / 10.0
 
         if self._close_position < self._open_position:
-            self.step_open_pos = self._close_position + step
+            self.step_open_pos += step
 
         else:
-            self.step_open_pos = self._close_position - step
+            self.step_open_pos -= step
 
 
         rospy.loginfo("ezgripper_interface: goto position %.3f" % self.step_open_pos)
         goal = GripperCommandGoal()
-        goal.command.position = self._grip_value
+        goal.command.position = self.step_open_pos
         goal.command.max_effort = 1.0
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: goto position done")
@@ -183,14 +183,14 @@ class EZGripper():
         step = abs(self._close_position - self._open_position) / 10.0
 
         if self._open_position < self._close_position:
-            self.step_close_pos = self._open_position + step
+            self.step_close_pos += step
 
         else:
-            self.step_close_pos = self._open_position - step
+            self.step_close_pos -= step
 
         rospy.loginfo("ezgripper_interface: goto position %.3f" % self.step_close_pos)
         goal = GripperCommandGoal()
-        goal.command.position = self._grip_value
+        goal.command.position = self.step_close_pos
         goal.command.max_effort = 1.0
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: goto position done")
