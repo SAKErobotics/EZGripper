@@ -1,16 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <launch>
+
+	<!-- Load the parameters -->
+  <rosparam file="$(find ezgripper_control)/config/joy_tcp.yaml" command="load"/>
+
+	<!-- Launch the action server -->
+	<node name="ezgripper_controller" pkg="ezgripper_driver" type="ezgripper_action_server.py" output="screen" />
+
+  <node name="ezgripper_joy_action_client" pkg="ezgripper_driver" type="ezgripper_joy_action_client.py"  output="screen"/>
+
   <node pkg="joy" type="joy_node" name="joy_node">
     <param name="dev" value="/dev/input/js0" />
     <param name="autorepeat_rate" value="20" />
-  </node>
-
-  <node pkg="ezgripper_driver" type="ezgripper.py" name="ezgripper" output="screen">
-    <param name="~port" value="192.168.0.200:5000"/>
-    <rosparam param="grippers">{main:[1]}</rosparam>
-  </node>
-  
-  <node pkg="ezgripper_driver" type="client.py" name="ezgripper_client" output="screen">
-    <rosparam param="grippers">['ezgripper/main']</rosparam>
   </node>
 
 </launch>
