@@ -58,7 +58,7 @@ class GripperAction:
         self.time_period = 1./self.update_rate
 
         self._timeout = 3.0
-        self._positional_buffer = 0.05
+        self._positional_buffer = 0.1
         self.all_servos = []
 
         self.port = rospy.get_param("~port")
@@ -273,7 +273,7 @@ class GripperAction:
             self._command_gripper(action_name, module_type, position, effort)
 
             # Check if goal is reached
-            if self._check_state(action_name, module_type, position):
+            if self._feedback[action_name].reached_goal:
                 self._as.set_succeeded(self._result[action_name])
                 rospy.loginfo("Gripper has reached desired position")
                 return

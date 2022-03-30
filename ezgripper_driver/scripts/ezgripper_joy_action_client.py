@@ -39,15 +39,15 @@ from sensor_msgs.msg import Joy
 from ezgripper_libs.ezgripper_interface import EZGripper
 
 
-class EZGripperJoy(object):
+class EZGripperJoy():
     """
     EZGripper Joy Action Client
     """
 
-    def __init__(self, gripper_names):
-        self.ezgripper_left = EZGripper(gripper_names[0])
+    def __init__(self, module_types, gripper_names):
+        self.ezgripper_left = EZGripper(module_types[0], gripper_names[0])
         if len(gripper_names) > 1:
-            self.ezgripper_right = EZGripper(gripper_names[1])
+            self.ezgripper_right = EZGripper(module_types[1], gripper_names[1])
         else:
             self.ezgripper_right = None
         self.last_command_end_time = rospy.get_rostime()
@@ -107,15 +107,18 @@ def main():
 
     no_of_grippers = rospy.get_param("/ezgripper_controller/no_of_grippers")
     gripper_names = []
+    module_types = []
 
     for i in range(1, int(no_of_grippers) + 1):
         action_name = rospy.get_param("/ezgripper_controller/gripper_{}/action_name".format(i))
+        module_type = rospy.get_param("/ezgripper_controller/gripper_{}/module_type".format(i))
         robot_ns = rospy.get_param("/ezgripper_controller/gripper_{}/robot_ns".format(i))
 
+        module_types.append(module_type)
         gripper_names.append(robot_ns + '/ezgripper_controller/'+ action_name)
 
 
-    ezgripper_joy = EZGripperJoy(gripper_names)
+    ezgripper_joy = EZGripperJoy(module_types, gripper_names)
 
     rospy.Subscriber("/joy", Joy, ezgripper_joy.joy_callback)
 
