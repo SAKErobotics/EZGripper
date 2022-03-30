@@ -8,14 +8,14 @@ EZGripper GUI for testing the ezgripper_driver
 import sys
 import rospy
 from ezgripper_libs.ezgripper_interface import EZGripper
-from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QMainWindow, QPushButton, QApplication
 
 rospy.init_node('ezgripper_gui_node')
 gripper = EZGripper('dual_gen2_single_mount', \
    '/ezgripper_dual_gen2_single_mount/ezgripper_controller/gripper_cmd')
 
 
-class GripperGUI(QtWidgets.QMainWindow):
+class GripperGUI(QMainWindow):
     """
     EZGripper GUI Class
     """
@@ -29,81 +29,81 @@ class GripperGUI(QtWidgets.QMainWindow):
         Initialize User Interface
         """
 
-        calibrateButton=QtWidgets.QPushButton("Calibrate",self)
-        calibrateButton.resize(100,30)
-        calibrateButton.clicked.connect(gripper.calibrate)
-        calibrateButton.move(50,10)
-        calibrateButton.show()
+        calibrate_button = QPushButton("Calibrate",self)
+        calibrate_button.resize(100,30)
+        calibrate_button.clicked.connect(gripper.calibrate)
+        calibrate_button.move(50,10)
+        calibrate_button.show()
 
-        releaseButton=QtWidgets.QPushButton("Release",self)
-        releaseButton.resize(200,200)
-        releaseButton.clicked.connect(gripper.release)
-        releaseButton.move(50,50)
+        release_button = QPushButton("Release",self)
+        release_button.resize(200,200)
+        release_button.clicked.connect(gripper.release)
+        release_button.move(50,50)
 
-        hard_closeButton=QtWidgets.QPushButton("Hard Close",self)
-        hard_closeButton.resize(200,200)
-        hard_closeButton.clicked.connect(self.submit_goto_hard_close)
-        hard_closeButton.move(250,50)
+        hard_close_button = QPushButton("Hard Close",self)
+        hard_close_button.resize(200,200)
+        hard_close_button.clicked.connect(self.hard_close)
+        hard_close_button.move(250,50)
 
-        openButton=QtWidgets.QPushButton("Open", self)
-        openButton.clicked.connect(self.submit_goto_open)
-        openButton.resize(200,200)
-        openButton.move(450,50)
+        open_button = QPushButton("Open", self)
+        open_button.clicked.connect(self.open)
+        open_button.resize(200,200)
+        open_button.move(450,50)
 
-        gotoButton=QtWidgets.QPushButton("0% Torque Mode", self)
-        gotoButton.resize(100,200)
-        gotoButton.clicked.connect(self.submit_goto1)
-        gotoButton.move(50,250)
+        goto_button = QPushButton("0% Torque Mode", self)
+        goto_button.resize(100,200)
+        goto_button.clicked.connect(self.zero_torque_mode)
+        goto_button.move(50,250)
 
-        gotoButton=QtWidgets.QPushButton("10%", self)
-        gotoButton.resize(100,200)
-        gotoButton.clicked.connect(self.submit_goto2)
-        gotoButton.move(150,250)
+        goto_button = QPushButton("10%", self)
+        goto_button.resize(100,200)
+        goto_button.clicked.connect(self.ten_percent_open)
+        goto_button.move(150,250)
 
-        gotoButton=QtWidgets.QPushButton("20%", self)
-        gotoButton.resize(100,200)
-        gotoButton.clicked.connect(self.submit_goto3)
-        gotoButton.move(250,250)
+        goto_button = QPushButton("20%", self)
+        goto_button.resize(100,200)
+        goto_button.clicked.connect(self.twenty_percent_open)
+        goto_button.move(250,250)
 
-        gotoButton=QtWidgets.QPushButton("30%", self)
-        gotoButton.resize(100,200)
-        gotoButton.clicked.connect(self.submit_goto4)
-        gotoButton.move(350,250)
+        goto_button = QPushButton("30%", self)
+        goto_button.resize(100,200)
+        goto_button.clicked.connect(self.thirty_percent_open)
+        goto_button.move(350,250)
 
-        gotoButton=QtWidgets.QPushButton("40%", self)
-        gotoButton.resize(100,200)
-        gotoButton.clicked.connect(self.submit_goto5)
-        gotoButton.move(450,250)
+        goto_button = QPushButton("40%", self)
+        goto_button.resize(100,200)
+        goto_button.clicked.connect(self.forty_percent_open)
+        goto_button.move(450,250)
 
-        gotoButton=QtWidgets.QPushButton("50%", self)
-        gotoButton.resize(100,200)
-        gotoButton.clicked.connect(self.submit_goto6)
-        gotoButton.move(550,250)
+        goto_button = QPushButton("50%", self)
+        goto_button.resize(100,200)
+        goto_button.clicked.connect(self.fifty_percent_open)
+        goto_button.move(550,250)
 
-        gotoButton=QtWidgets.QPushButton("60%", self)
-        gotoButton.resize(100,200)
-        gotoButton.clicked.connect(self.submit_goto7)
-        gotoButton.move(150,450)
+        goto_button = QPushButton("60%", self)
+        goto_button.resize(100,200)
+        goto_button.clicked.connect(self.sixty_percent_open)
+        goto_button.move(150,450)
 
-        gotoButton=QtWidgets.QPushButton("70%", self)
-        gotoButton.resize(100,200)
-        gotoButton.clicked.connect(self.submit_goto8)
-        gotoButton.move(250,450)
+        goto_button = QPushButton("70%", self)
+        goto_button.resize(100,200)
+        goto_button.clicked.connect(self.seventy_percent_open)
+        goto_button.move(250,450)
 
-        gotoButton=QtWidgets.QPushButton("80%", self)
-        gotoButton.resize(100,200)
-        gotoButton.clicked.connect(self.submit_goto9)
-        gotoButton.move(350,450)
+        goto_button = QPushButton("80%", self)
+        goto_button.resize(100,200)
+        goto_button.clicked.connect(self.eighty_percent_open)
+        goto_button.move(350,450)
 
-        gotoButton=QtWidgets.QPushButton("90%", self)
-        gotoButton.resize(100,200)
-        gotoButton.clicked.connect(self.submit_goto10)
-        gotoButton.move(450,450)
+        goto_button = QPushButton("90%", self)
+        goto_button.resize(100,200)
+        goto_button.clicked.connect(self.ninety_percent_open)
+        goto_button.move(450,450)
 
-        gotoButton=QtWidgets.QPushButton("100%", self)
-        gotoButton.resize(100,200)
-        gotoButton.clicked.connect(self.submit_goto11)
-        gotoButton.move(550,450)
+        goto_button = QPushButton("100%", self)
+        goto_button.resize(100,200)
+        goto_button.clicked.connect(self.hundred_percent_open)
+        goto_button.move(550,450)
 
         self.statusBar()
 
@@ -111,60 +111,91 @@ class GripperGUI(QtWidgets.QMainWindow):
         self.setWindowTitle("EZGripper GUI")
         self.show()
 
-    def submit_goto_hard_close(self):
+    def hard_close(self):
+        """
+        Hard Close the gripper
+        """
         gripper.goto_position(0.0, 100.0)
 
-    def submit_goto_open(self):
+    def open(self):
+        """
+        Open the gripper
+        """
         gripper.goto_position(100.0, 100.0)
 
-    def submit_goto1(self):
+    def zero_torque_mode(self):
+        """
+        Enable Zero Torque Mode
+        """
         gripper.goto_position(0.0, 10.0)
 
-    def submit_goto2(self):
+    def ten_percent_open(self):
+        """
+        10% gripper open
+        """
         gripper.goto_position(10.0, 100.0)
 
-    def submit_goto3(self):
+    def twenty_percent_open(self):
+        """
+        20% gripper open
+        """
         gripper.goto_position(20.0, 100.0)
 
-    def submit_goto4(self):
+    def thirty_percent_open(self):
+        """
+        30% gripper open
+        """
         gripper.goto_position(30.0, 100.0)
 
-    def submit_goto5(self):
+    def forty_percent_open(self):
+        """
+        40% gripper open
+        """
         gripper.goto_position(40.0, 100.0)
 
-    def submit_goto6(self):
+    def fifty_percent_open(self):
+        """
+        50% gripper open
+        """
         gripper.goto_position(50.0, 100.0)
 
-    def submit_goto7(self):
+    def sixty_percent_open(self):
+        """
+        60% gripper open
+        """
         gripper.goto_position(60.0, 100.0)
 
-    def submit_goto8(self):
+    def seventy_percent_open(self):
+        """
+        70% gripper open
+        """
         gripper.goto_position(70.0, 100.0)
 
-    def submit_goto9(self):
+    def eighty_percent_open(self):
+        """
+        80% gripper open
+        """
         gripper.goto_position(80.0, 100.0)
 
-    def submit_goto10(self):
+    def ninety_percent_open(self):
+        """
+        90% gripper open
+        """
         gripper.goto_position(90.0, 100.0)
 
-    def submit_goto11(self):
+    def hundred_percent_open(self):
+        """
+        100% gripper open
+        """
         gripper.goto_position(100.0, 100.0)
 
-    def submit_goto12(self):
-        gripper.goto_position(20.0, 100.0)
-
-    def submit_goto13(self):
-        gripper.goto_position(20.0, 100.0)
-
-    def submit_goto14(self):
-        gripper.goto_position(20.0, 100.0)
 
 def main():
     """
     Main Function
     """
-    ezgripper_app = QtWidgets.QApplication(sys.argv)
-    GripperGUI()
+    ezgripper_app = QApplication(sys.argv)
+    ex = GripperGUI()
     sys.exit(ezgripper_app.exec_())
 
 if __name__== '__main__':

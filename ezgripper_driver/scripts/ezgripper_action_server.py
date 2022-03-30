@@ -70,7 +70,7 @@ class GripperAction:
         self.grippers = {}
         self.joint_state_pub = {}
 
-        # connection = create_connection(dev_name=self.port, baudrate=self.baudrate)
+        connection = create_connection(dev_name=self.port, baudrate=self.baudrate)
 
         for i in range(1, int(self.no_of_grippers) + 1):
 
@@ -82,11 +82,11 @@ class GripperAction:
             self._feedback[action_name] = GripperCommandFeedback()
             self._result[action_name] = GripperCommandResult()
 
-            # self.grippers[action_name] = Gripper(connection, action_name, servo_ids)
-            # self.all_servos += self.grippers[action_name].servos
+            self.grippers[action_name] = Gripper(connection, action_name, servo_ids)
+            self.all_servos += self.grippers[action_name].servos
 
-            # self.grippers[action_name].calibrate()
-            # self.grippers[action_name].open()
+            self.grippers[action_name].calibrate()
+            self.grippers[action_name].open()
 
             self.joint_state_pub[action_name] = \
                 rospy.Publisher('/{}/joint_states'.format(robot_ns), JointState, queue_size=1)
@@ -107,8 +107,8 @@ class GripperAction:
         self.diagnostics_pub = rospy.Publisher('/diagnostics', DiagnosticArray, queue_size=1)
 
         # Timers
-        # rospy.Timer(rospy.Duration(self.time_period), self.joint_state_update)
-        # rospy.Timer(rospy.Duration(1.0), self.diagnostics_and_servo_update)
+        rospy.Timer(rospy.Duration(self.time_period), self.joint_state_update)
+        rospy.Timer(rospy.Duration(1.0), self.diagnostics_and_servo_update)
 
         rospy.loginfo("Gripper server ready")
 
@@ -248,7 +248,8 @@ class GripperAction:
         self._feedback[action_name].position = self.grippers[action_name].get_position( \
             use_percentages = False, gripper_module = module_type)
         self._feedback[action_name].effort = effort
-        self._feedback[action_name].reached_goal = self._check_state(action_name, module_type, position)
+        self._feedback[action_name].reached_goal = \
+            self._check_state(action_name, module_type, position)
         self._result[action_name] = self._feedback[action_name]
         self._as.publish_feedback(self._feedback[action_name])
 

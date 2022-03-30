@@ -53,8 +53,6 @@ from std_srvs.srv import Empty
 #
 
 
-
-
 def remap(input_val, in_min, in_max, out_min, out_max):
     """
     Remap Function
@@ -205,9 +203,9 @@ class EZGripper():
         """
         Closing the Gripper
         """
-        rospy.loginfo("ezgripper_interface: close, effort %.1f"%max_effort)
+        rospy.loginfo("ezgripper_interface: close, effort %.1f" % max_effort)
         goal = GripperCommandGoal()
-        goal.command.position = 0.0
+        goal.command.position = self._close_position
         goal.command.max_effort = max_effort
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: close done")
@@ -219,7 +217,7 @@ class EZGripper():
         """
         rospy.loginfo("ezgripper_interface: hard close")
         goal = GripperCommandGoal()
-        goal.command.position = 0.0
+        goal.command.position = self._close_position
         goal.command.max_effort = 1.0
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: hard close done")
@@ -231,7 +229,7 @@ class EZGripper():
         """
         rospy.loginfo("ezgripper_interface: soft close")
         goal = GripperCommandGoal()
-        goal.command.position = 0.0
+        goal.command.position = self._close_position
         goal.command.max_effort = 0.2
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: soft close done")
@@ -258,26 +256,32 @@ class EZGripper():
 
         if gripper_module == 'dual_gen1':
             current_position = remap(current_position, \
-                100.0, 0.0, self.OPEN_DUAL_GEN1_POS, self.CLOSE_DUAL_GEN1_POS)
+                100.0, 0.0, self.OPEN_DUAL_GEN1_POS, \
+                    self.CLOSE_DUAL_GEN1_POS)
 
         elif gripper_module == 'dual_gen2':
             current_position = remap(current_position, \
-                100.0, 0.0, self.OPEN_DUAL_GEN2_POS, self.CLOSE_DUAL_GEN2_POS)
+                100.0, 0.0, self.OPEN_DUAL_GEN2_POS, \
+                    self.CLOSE_DUAL_GEN2_POS)
 
         elif gripper_module == 'dual_gen2_single_mount':
             current_position = remap(current_position, \
-                100.0, 0.0, self.OPEN_DUAL_GEN2_SINGLE_MOUNT_POS, self.CLOSE_DUAL_GEN2_SINGLE_MOUNT_POS)
+                100.0, 0.0, self.OPEN_DUAL_GEN2_SINGLE_MOUNT_POS, \
+                    self.CLOSE_DUAL_GEN2_SINGLE_MOUNT_POS)
 
         elif gripper_module == 'dual_gen2_triple_mount':
             current_position = remap(current_position, \
-                100.0, 0.0, self.OPEN_DUAL_GEN2_TRIPLE_MOUNT_POS, self.CLOSE_DUAL_GEN2_TRIPLE_MOUNT_POS)
+                100.0, 0.0, self.OPEN_DUAL_GEN2_TRIPLE_MOUNT_POS, \
+                    self.CLOSE_DUAL_GEN2_TRIPLE_MOUNT_POS)
 
         elif gripper_module == 'quad':
             current_position = remap(current_position, \
-                100.0, 0.0, self.OPEN_QUAD_POS, self.CLOSE_QUAD_POS)
+                100.0, 0.0, self.OPEN_QUAD_POS, \
+                    self.CLOSE_QUAD_POS)
 
         current_effort = remap(current_effort, \
-            0.0, 100.0, self.MIN_SIMULATED_EFFORT, self.MAX_SIMULATED_EFFORT)
+            0.0, 100.0, self.MIN_SIMULATED_EFFORT, \
+                self.MAX_SIMULATED_EFFORT)
 
 
         # position in % 0 to 100 (0 is closed), effort in % 0 to 100
