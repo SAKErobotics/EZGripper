@@ -8,8 +8,9 @@
   </include>
 
 	<!-- Launch ezgripper action server -->
-	<node name="ezgripper_controller" ns="ezgripper_quad" pkg="ezgripper_driver"
-		type="ezgripper_action_server.py" args="quad" output="screen"/>
+  <include file="$(find ezgripper_driver)/launch/action_server.launch">
+    <arg name="ezgripper_module" value="quad" />
+  </include>
 
   <!-- publish the robot state (tf transforms) -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
