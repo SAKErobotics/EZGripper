@@ -2,8 +2,8 @@
 <launch>
 
 	<!-- Configure the ezgripper module -->
-	<arg name="ezgripper_module" default="dual_gen2_single_mount"
-		doc="Gripper module dictonary - {dual_gen1, dual_gen2, dual_gen2_single_mount, dual_gen2_triple_mount, quad}" />
+	<arg name="ezgripper_module" default="single_mount"
+		doc="Gripper module dictonary - {single_mount, triple_mount}" />
 
 	<!-- Load the parameters -->
   <rosparam file="$(find ezgripper_control)/config/gripper_params_$(arg ezgripper_module).yaml" command="load"/>

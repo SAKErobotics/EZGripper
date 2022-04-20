@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+  <rosparam command="load" file="$(find ezgripper_triple_mount_moveit_config)/config/joint_names.yaml"/>
+
+  <include file="$(find ezgripper_triple_mount_moveit_config)/launch/planning_context.launch" >
+    <arg name="load_robot_description" value="true" />
+  </include>
+
+	<!-- Launch ezgripper action server -->
+  <include file="$(find ezgripper_driver)/launch/action_server.launch">
+    <arg name="ezgripper_module" value="triple_mount" />
+  </include>
+
+  <!-- publish the robot state (tf transforms) -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+		<remap from="joint_states" to="/ezgripper_triple_mount/joint_states" />
+	</node>
+
+  <include file="$(find ezgripper_triple_mount_moveit_config)/launch/move_group.launch">
+    <arg name="publish_monitored_planning_scene" value="true" />
+		<arg name="moveit_controller_manager" value="simple" /> <!-- ros_control does not support Gripper Command -->
+  </include>
+
+  <include file="$(find ezgripper_triple_mount_moveit_config)/launch/moveit_rviz.launch">
+    <arg name="rviz_config" value="$(dirname)/moveit.rviz"/>
+  </include>
+
+</launch>

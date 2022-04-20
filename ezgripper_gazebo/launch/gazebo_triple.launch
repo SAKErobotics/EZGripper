@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+    <!-- World file to load -->
+    <arg name="world_name" default="mars.world"/>
+
+
+    <param name="robot_description"
+    command ="$(find xacro)/xacro --inorder '$(find ezgripper_description)/urdf/ezgripper_triple_standalone.urdf.xacro'" />
+
+    <!-- Launch controllers -->
+    <include file="$(find ezgripper_control)/launch/control.launch">
+        <arg name="ezgripper_module" value="triple_mount"/>
+    </include>
+
+    <!-- Start Gazebo with an empty world -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" 		value="$(find ezgripper_gazebo)/worlds/$(arg world_name)"/>
+        <arg name="paused"        value="false"/>
+        <arg name="use_sim_time"  value="true"/>
+        <arg name="gui"           value="true"/>
+        <arg name="headless"      value="true"/>
+        <arg name="debug"         value="false"/>
+    </include>
+
+    <!-- Start the robot -->
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"
+        args="-param robot_description -urdf -model ezgripper_triple_standalone" />
+
+</launch>
