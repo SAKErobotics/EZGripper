@@ -2,7 +2,7 @@
 <robot name="ezgripper_single_mount" xmlns:xacro="http://ros.org/wiki/xacro">
 
 
-	<xacro:macro name="ezgripper_single_mount" params="prefix parent_link *origin">
+	<xacro:macro name="ezgripper_single_mount" params="prefix parent_link *origin activate_control:=false">
 
 		<!-- links -->
 
@@ -41,6 +41,15 @@
 		<xacro:ezgripper_palm prefix="${prefix}" parent_link="${prefix}_ezgripper_mount">
 			<xacro:insert_block name="origin"/>
 		</xacro:ezgripper_palm>
+
+		<xacro:if value="${activate_control}">
+			<gazebo>
+				<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+					<robotNamespace>/ezgripper_single_mount</robotNamespace>
+					<legacyModeNS>true</legacyModeNS>
+				</plugin>
+			</gazebo>
+		</xacro:if>
 
 	</xacro:macro>
 
@@ -102,6 +111,7 @@
 		<!-- <xacro:ezgripper_knuckle_palm_trans prefix="${prefix}" postfix="L1_2"/> -->
 
 		<xacro:gazebo_knuckle_jsp prefix="${prefix}" />
+		<xacro:gazebo_mimic_plugin prefix="${prefix}" />
 
 	</xacro:macro>
 
@@ -244,24 +254,19 @@
 		<gazebo>
 			<plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
 				<jointName>${prefix}_ezgripper_knuckle_palm_L1_1</jointName>
+				<updateRate>100.0</updateRate>
 			</plugin>
 		</gazebo>
 	</xacro:macro>
 
-
-	<gazebo>
-
-		<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-			<robotNamespace>/ezgripper_single_mount</robotNamespace>
-			<legacyModeNS>true</legacyModeNS>
-		</plugin>
-
-		<!-- Fix mimicking bug -->
-		<plugin filename="libroboticsgroup_upatras_gazebo_mimic_joint_plugin.so" name="mimicker">
-			<joint>left_ezgripper_knuckle_palm_L1_1</joint>
-			<mimicJoint>left_ezgripper_knuckle_palm_L1_2</mimicJoint>
-		</plugin>
-
-	</gazebo>
+	<xacro:macro name="gazebo_mimic_plugin" params="prefix">
+		<gazebo>
+			<!-- Fix mimicking bug -->
+			<plugin filename="libroboticsgroup_upatras_gazebo_mimic_joint_plugin.so" name="mimicker">
+				<joint>${prefix}_ezgripper_knuckle_palm_L1_1</joint>
+				<mimicJoint>${prefix}_ezgripper_knuckle_palm_L1_2</mimicJoint>
+			</plugin>
+		</gazebo>
+	</xacro:macro>
 
 </robot>

@@ -10,7 +10,7 @@
 	<xacro:include filename="$(find ezgripper_description)/urdf/ezgripper_single_mount.urdf.xacro"/>
 
 	<!-- Add the gripper -->
-	<xacro:ezgripper_single_mount prefix="left" parent_link="base_link">
+	<xacro:ezgripper_single_mount prefix="left" parent_link="base_link" activate_control="true">
 		<origin xyz="${ezgripper_offset_x} ${ezgripper_offset_y} ${ezgripper_offset_z}" rpy="0 0 0"/>
 	</xacro:ezgripper_single_mount>
 

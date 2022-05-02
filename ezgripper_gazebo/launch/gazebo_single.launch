@@ -6,7 +6,7 @@
 
 
     <param name="robot_description"
-        command="$(find xacro)/xacro --inorder '$(find ezgripper_description)/urdf/ezgripper_single_standalone.urdf.xacro'" />
+        command="$(find xacro)/xacro '$(find ezgripper_description)/urdf/ezgripper_single_standalone.urdf.xacro'" />
 
     <!-- Launch controllers -->
     <include file="$(find ezgripper_control)/launch/control.launch" />
