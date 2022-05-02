@@ -9,9 +9,7 @@
         command="$(find xacro)/xacro --inorder '$(find ezgripper_description)/urdf/ezgripper_single_standalone.urdf.xacro'" />
 
     <!-- Launch controllers -->
-    <include file="$(find ezgripper_control)/launch/control.launch">
-        <arg name="ezgripper_module" value="single_mount"/>
-    </include>
+    <include file="$(find ezgripper_control)/launch/control.launch" />
 
   <!-- Start Gazebo with an empty world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">

@@ -8,9 +8,7 @@
   </include>
 
 	<!-- Launch ezgripper action server -->
-  <include file="$(find ezgripper_driver)/launch/action_server.launch">
-    <arg name="ezgripper_module" value="single_mount" />
-  </include>
+  <include file="$(find ezgripper_driver)/launch/action_server.launch"/>
 
   <!-- publish the robot state (tf transforms) -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">

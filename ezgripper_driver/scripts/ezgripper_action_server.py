@@ -76,7 +76,6 @@ class GripperAction:
 
             action_name = rospy.get_param("~gripper_{}/action_name".format(i))
             servo_ids = rospy.get_param("~gripper_{}/servo_ids".format(i))
-            module_type = rospy.get_param("~gripper_{}/module_type".format(i))
             robot_ns = rospy.get_param("~gripper_{}/robot_ns".format(i))
 
             self._feedback[action_name] = GripperCommandFeedback()
@@ -98,7 +97,7 @@ class GripperAction:
                 SimpleActionServer( \
                     robot_ns + '/ezgripper_controller/'+ action_name, \
                     GripperCommandAction, \
-                    partial(self._execute_callback, action_name, module_type), \
+                    partial(self._execute_callback, action_name), \
                     False)
 
             self._as.start()
@@ -121,24 +120,15 @@ class GripperAction:
         for i in range(1, int(self.no_of_grippers) + 1):
 
             action_name = rospy.get_param("/ezgripper_controller/gripper_{}/action_name".format(i))
-            module_type = rospy.get_param("/ezgripper_controller/gripper_{}/module_type".format(i))
 
             current_gripper_position = self.grippers[action_name].get_position( \
-                use_percentages = False, gripper_module=module_type)
+                use_percentages = False)
 
             msg = JointState()
             msg.header.stamp = rospy.Time.now()
             msg.position = [current_gripper_position]
-
-            if module_type == 'dual_gen1' or module_type == 'quad':
-                finger_joint = 'left_ezgripper_knuckle_1'
-
-            elif module_type == 'dual_gen2' or module_type == 'single_mount':
-                finger_joint = 'left_ezgripper_knuckle_palm_L1_1'
-
-            elif module_type == 'triple_mount':
-                finger_joint = 'left1_ezgripper_knuckle_palm_L1_1'
-
+            
+            finger_joint = 'left_ezgripper_knuckle_palm_L1_1'
             msg.name = [finger_joint]
 
             self.joint_state_pub[action_name].publish(msg)
@@ -213,7 +203,7 @@ class GripperAction:
         """
         return rospy.get_time() - start_time
 
-    def _command_gripper(self, action_name, module_type, position, effort):
+    def _command_gripper(self, action_name, position, effort):
         """
         Actuate gripper to position and effort
         """
@@ -230,30 +220,29 @@ class GripperAction:
         else:
             rospy.loginfo("Go to position: start")
             self.grippers[action_name].goto_position(position, effort, \
-                use_percentages = False, gripper_module = module_type)
+                use_percentages = False)
             rospy.loginfo("Go to position: done")
 
-    def _check_state(self, action_name, module_type, position):
+    def _check_state(self, action_name, position):
         """
         Check if gripper has reached desired position
         """
         return fabs(self.grippers[action_name].get_position( \
-            use_percentages = False, \
-                gripper_module = module_type) - position) < self._positional_buffer
+            use_percentages = False) - position) < self._positional_buffer
 
-    def _publish_feedback_and_update_result(self, action_name, module_type, position, effort):
+    def _publish_feedback_and_update_result(self, action_name, position, effort):
         """
         Publish Gripper Feedback and Update Result
         """
         self._feedback[action_name].position = self.grippers[action_name].get_position( \
-            use_percentages = False, gripper_module = module_type)
+            use_percentages = False)
         self._feedback[action_name].effort = effort
         self._feedback[action_name].reached_goal = \
-            self._check_state(action_name, module_type, position)
+            self._check_state(action_name, position)
         self._result[action_name] = self._feedback[action_name]
         self._as.publish_feedback(self._feedback[action_name])
 
-    def _execute_callback(self, action_name, module_type, goal_handle):
+    def _execute_callback(self, action_name, goal_handle):
         """
         Execute callback for action server
         """
@@ -268,10 +257,10 @@ class GripperAction:
 
             # Publish Feedback and Update Result
             self._publish_feedback_and_update_result( \
-                action_name, module_type, position, effort)
+                action_name, position, effort)
 
             # Command gripper
-            self._command_gripper(action_name, module_type, position, effort)
+            self._command_gripper(action_name, position, effort)
 
             # Check if goal is reached
             if self._feedback[action_name].reached_goal:

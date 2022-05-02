@@ -66,51 +66,16 @@ class EZGripper():
     EZGripper Class
     """
 
-    OPEN_DUAL_GEN1_POS = 1.5707
-    CLOSE_DUAL_GEN1_POS = -0.27
-
-    OPEN_DUAL_GEN2_POS = 0.0
-    CLOSE_DUAL_GEN2_POS = 1.94
-
-    OPEN_DUAL_GEN2_SINGLE_MOUNT_POS = -1.5707
-    CLOSE_DUAL_GEN2_SINGLE_MOUNT_POS = 0.27
-
-    OPEN_DUAL_GEN2_TRIPLE_MOUNT_POS = -1.5707
-    CLOSE_DUAL_GEN2_TRIPLE_MOUNT_POS = 0.27
-
-    OPEN_QUAD_POS = 1.5707
-    CLOSE_QUAD_POS = -0.27
-
     MIN_SIMULATED_EFFORT = 0.0
     MAX_SIMULATED_EFFORT = 1.0
 
 
-    def __init__(self, module_type, name):
+    def __init__(self, name):
         self.name = name
 
         # Open positions
-
-        if module_type == 'dual_gen1' or module_type == 'quad':
-            self._open_position = 1.5707
-
-        elif module_type == 'dual_gen2':
-            self._open_position = 0.0
-
-        elif module_type == 'dual_gen2_single_mount' or 'dual_gen2_triple_mount':
-            self._open_position = -1.5707
-
-        # Close positions
-
-        if module_type == 'dual_gen1' or module_type == 'quad':
-            self._close_position = -0.27
-
-        elif module_type == 'dual_gen2':
-            self._close_position = 1.94
-
-        elif module_type == 'dual_gen2_single_mount' or 'dual_gen2_triple_mount':
-            self._close_position = 0.27
-
-        self._module_type = module_type
+        self._open_position = -1.5707
+        self._close_position = 1.94
 
         self.step_open_pos = self._close_position
         self.step_close_pos = self._open_position
@@ -256,32 +221,10 @@ class EZGripper():
         Go to desired position
         """
 
-        gripper_module = self._module_type
 
-        if gripper_module == 'dual_gen1':
-            current_position = remap(current_position, \
-                100.0, 0.0, self.OPEN_DUAL_GEN1_POS, \
-                    self.CLOSE_DUAL_GEN1_POS)
+        current_position = remap(current_position, \
+            100.0, 0.0, self._open_position, self._close_position)
 
-        elif gripper_module == 'dual_gen2':
-            current_position = remap(current_position, \
-                100.0, 0.0, self.OPEN_DUAL_GEN2_POS, \
-                    self.CLOSE_DUAL_GEN2_POS)
-
-        elif gripper_module == 'dual_gen2_single_mount':
-            current_position = remap(current_position, \
-                100.0, 0.0, self.OPEN_DUAL_GEN2_SINGLE_MOUNT_POS, \
-                    self.CLOSE_DUAL_GEN2_SINGLE_MOUNT_POS)
-
-        elif gripper_module == 'dual_gen2_triple_mount':
-            current_position = remap(current_position, \
-                100.0, 0.0, self.OPEN_DUAL_GEN2_TRIPLE_MOUNT_POS, \
-                    self.CLOSE_DUAL_GEN2_TRIPLE_MOUNT_POS)
-
-        elif gripper_module == 'quad':
-            current_position = remap(current_position, \
-                100.0, 0.0, self.OPEN_QUAD_POS, \
-                    self.CLOSE_QUAD_POS)
 
         current_effort = remap(current_effort, \
             0.0, 100.0, self.MIN_SIMULATED_EFFORT, \
@@ -311,8 +254,7 @@ class EZGripper():
 
 if __name__ == "__main__":
     rospy.init_node("ezgripper_interface_node")
-    ez = EZGripper('dual_gen2_single_mount', \
-        '/ezgripper_dual_gen2_single_mount/ezgripper_controller/gripper_cmd')
+    ez = EZGripper('/ezgripper_single_mount/ezgripper_controller/gripper_cmd')
     ez.open()
     ez.calibrate()
     ez.open()

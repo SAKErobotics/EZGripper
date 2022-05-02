@@ -11,8 +11,7 @@ from ezgripper_libs.ezgripper_interface import EZGripper
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QApplication
 
 rospy.init_node('ezgripper_gui_node')
-gripper = EZGripper('single_mount', \
-   '/ezgripper_single_mount/ezgripper_controller/gripper_cmd')
+gripper = EZGripper('/ezgripper_single_mount/ezgripper_controller/gripper_cmd')
 
 
 class GripperGUI(QMainWindow):

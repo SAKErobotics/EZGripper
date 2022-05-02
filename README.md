@@ -43,28 +43,14 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 ### Simulation testing
 ---
 
-* Set the following bash variable according to your gripper module version. Execute this command in your terminal  or you can add this line to your ~/.bashrc file
-
-	  export ezgripper_module=<your_gripper_module>
-
-	E.g. for `dual_gen2_single_mount` the command would be 
-
-	  export ezgripper_module=dual_gen2_single_mount
-
-	or for `dual_gen2_triple_mount` the command would be
-
-	  export ezgripper_module=dual_gen2_triple_mount
-
-	Older legacy versions are also maintained and can be setting this bash variable appropriately to one of these: `dual_gen1`, `dual_gen2` or `quad`.
-
 
 * Launch the gripper module in RViz :
 
-	  roslaunch ezgripper_description display.launch ezgripper_module:=${ezgripper_module}
+	  roslaunch ezgripper_description display_single_mount.launch
 
 * Similarly to launch in Gazebo:
 
-	  roslaunch ezgripper_gazebo gazebo.launch ezgripper_module:=${ezgripper_module}
+	  roslaunch ezgripper_gazebo gazebo_single.launch
 
 * To actuate the gripper into its respective open/close configurations in Gazebo, in a new terminal execute these commands:
 
@@ -83,15 +69,15 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 
 * To launch the ezgripper in RViz only:
 
-	  roslaunch ezgripper_${ezgripper_module}_moveit_config demo.launch
+	  roslaunch ezgripper_single_mount_moveit_config demo.launch
 
 * To launch the ezgripper in Gazebo and RViz for control:
 
-	  roslaunch ezgripper_${ezgripper_module}_moveit_config demo_gazebo.launch
+	  roslaunch ezgripper_single_mount_moveit_config demo_gazebo.launch
 
 * To control the ezgripper hardware through MoveIt!:
 
-	  roslaunch ezgripper_${ezgripper_module}_moveit_config ezgripper_${ezgripper_module}_moveit_planning_execution.launch
+	  roslaunch ezgripper_single_mount_moveit_config ezgripper_single_mount_moveit_planning_execution.launch
 
 ## Additional Configurations
 
@@ -104,13 +90,12 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 		gripper_1:
 			action_name: gripper_cmd
 			servo_ids: [1]
-			module_type: dual_gen2_single_mount
 			robot_ns: main
 
 	**`action_name`** - <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name of the action to be used.<br/>
   **`servo_ids`** - <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list of servo ids to control. (several ids if several grippers are to be used as one group). For example `[9]` and `[10,11]` for two grippers.<br/>
 	By default, SAKE Robotics delivers its grippers with address 1 for Duals and 1 and 2 for Quads and 57kbps.<br/>
-  **`module_type`** - <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type of the gripper module. (`dual_gen1`, `dual_gen2`, `dual_gen2_single_mount`, `dual_gen2_triple_mount`, `quad`).<br/>
+ 
 	**`robot_ns`** - <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;namespace of the robot.
 
 * Example launch files to support various EZGripper configurations.
@@ -165,7 +150,7 @@ Access the URDF [models](https://github.com/SAKErobotics/EZGripper/tree/master/e
 
 * Check whether the `joint_state_controller` and the `ezgripper_controller` modules are loaded:
 
-	  rosservice call /ezgripper_${ezgripper_module}/controller_manager/list_controllers
+	  rosservice call /ezgripper_single_mount/controller_manager/list_controllers
 
 ### ROS Diagnostics
 
