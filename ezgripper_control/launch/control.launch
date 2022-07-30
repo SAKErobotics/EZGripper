@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+	<!-- Load the parameters -->
+  <rosparam file="$(find ezgripper_control)/config/controllers_single_mount.yaml" command="load"/>
+
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+		ns="/ezgripper_single_mount" output="screen" args="ezgripper_controller"/>
+
+</launch>

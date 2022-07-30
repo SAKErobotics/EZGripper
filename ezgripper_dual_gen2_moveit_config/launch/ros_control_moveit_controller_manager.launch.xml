@@ -1,6 +1,0 @@
-<launch>
-
-	<param name="ros_control_namespace" value="ezgripper_dual_gen2" />
-	<!-- Define MoveIt controller manager plugin -->
-	<param name="moveit_controller_manager" value="moveit_ros_control_interface::MoveItControllerManager" />
-</launch>
