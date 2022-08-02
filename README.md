@@ -67,6 +67,9 @@ A ROS package that serves as a driver to the [EZGripper module](https://sakerobo
 ### MoveIt!
 ---
 
+* Need to install MoveIt!
+          sudo apt install ros-noetic-moveit
+
 * To launch the ezgripper in RViz only:
 
 	  roslaunch ezgripper_single_mount_moveit_config demo.launch
